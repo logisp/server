@@ -6,7 +6,7 @@ use JWT;
 use Auth as AuthService;
 use Closure;
 use App\Domain\Facades\Users;
-use App\Domain\Facades\admins;
+use App\Domain\Facades\Admins;
 
 class Auth
 {
