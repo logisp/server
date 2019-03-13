@@ -9,8 +9,8 @@ class TestAccountSeeder extends Seeder
 {
 	public function run()
 	{
-		Users::createRootUser('aeoikj');
+		Users::createRootUser(env('ROOT_PASSWORD'));
 		Users::createRootEmail('delylaric@gmail.com');
-		Admins::createRootAdmin('aeoikj');
+		Admins::createRootAdmin(env('ROOT_PASSWORD'));
 	}
 }
