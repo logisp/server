@@ -15,31 +15,30 @@ class JwtServiceTest extends TestCase
     ]
   ];
 
-  public function testEncodeDecode()
+  public function testEncode()
   {
     $token = JWT::encode($this->user);
-    $this->assertNotNull(JWT::decode($token));
-  }
+    $this->assertNotNull($token);
 
-  public function testGenerate()
-  {
-    $tokenInfo = JWT::generate($this->user);
-
-    $this->assertNotNull($tokenInfo);
-
-    return $tokenInfo->token;
+    return $token;
   }
 
   /**
-   * @depends testGenerate
+   * @depends testEncode
    */
-  public function testRefreshParse($token)
+  public function testDecode($token)
   {
-    JWT::parse($token);
-    $token = JWT::refresh();
-    JWT::parse($token->token);
+    $tokenData = JWT::decode($token);
 
-    $this->assertFalse(JWT::isNeedToRefresh());
-    $this->assertEquals((object) $this->user, JWT::tokenData());
+    $this->assertNotNull($tokenData);
+  }
+
+  /**
+   * @depends testEncode
+   */
+  public function testRefresh($token)
+  {
+    $token = JWT::refresh();
+    $this->assertNotNull($token);
   }
 }

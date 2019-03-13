@@ -22,9 +22,9 @@ class Test
   private function setUser()
   {
     $user = Users::findById(0);
-    $data = ['sys' => 'user', 'id' => $user->id];
-    $user->token = JWT::generate($data);
-    $user->email = Users::getEmailByUserId(0);
+    $data = [ 'aud' => 'user', 'id' => 0 ];
+    $user->token = JWT::encode($data);
+    $user->email = Users::findEmailById(0);
 
     $this->user = $user;
   }
@@ -32,8 +32,11 @@ class Test
   private function setAdmin()
   {
     $admin = Admins::findById(0);
-    $data = ['sys' => 'admin', 'id' => $admin->id];
-    $admin->token = JWT::generate($data);
+    $data = [
+      'aud' => 'admin',
+      'id' => 0,
+    ];
+    $admin->token = JWT::encode($data);
 
     $this->admin = $admin;
   }

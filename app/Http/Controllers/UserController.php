@@ -7,7 +7,7 @@ use App\Domain\Facades\Users;
 
 class UserController extends Controller
 {
-	public function createByEmail()
+	public function createUserByEmail()
 	{
 		$address = $this->get('address', 'required|email');
 		$password = $this->get('password', 'required');
@@ -17,11 +17,9 @@ class UserController extends Controller
 		Users::createEmail($id, $address);
 		Transaction::commit();
 
-		$message = 'success_to_create_user_by_email';
-
 		return $this->success([
+			'message' => 'success_to_create_user_by_email',
 			'id' => $id,
-			'message' => $message
 		]);
 	}
 
@@ -31,7 +29,7 @@ class UserController extends Controller
 
 		Transaction::begin();
 		Users::deleteById($id);
-		Users::deleteEmailsByUserId($id);
+		Users::deleteEmailsById($id);
 		// Users::deleteAmazonAccounts($id);
 		// Users::deleteCreditCardAccounts($id);
 		Transaction::commit();

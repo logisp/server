@@ -7,7 +7,7 @@ use App\Domain\Facades\Users;
 class UserTest extends TestCase
 {
   protected $password = '123456';
-  protected $email = 'testuser@logisp.com';
+  protected $address = 'testuser@logisp.com';
 
   public function testCreate()
   {
@@ -40,8 +40,8 @@ class UserTest extends TestCase
    */
   public function testCreateEmail($id)
   {
-    $result = Users::createEmail($id, $this->email);
-    $this->assertTrue($result);
+    $result = Users::createEmail($id, $this->address);
+    $this->assertNotNull($result);
 
     return $id;
   }
@@ -49,20 +49,19 @@ class UserTest extends TestCase
   /**
    * @depends testCreateEmail
    */
-  public function testGetUserIdByEmail($id)
+  public function testFindByEmail($id)
   {
-    $userId = Users::getUserIdByEmail($this->email);
-    $this->assertNotNull($userId);
+    $user = Users::findByEmail($this->address);
+    $this->assertNotNull($user);
   }
 
   /**
    * @depends testCreateEmail
    */
-
-  public function testGetEmailByUserId($id)
+  public function testFindEmailById($id)
   {
-    $email = Users::getEmailByUserId($id);
-    $this->assertTrue($email->address === $this->email);
+    $email = Users::findEmailById($id);
+    $this->assertTrue($email->address === $this->address);
   }
 
   /**
@@ -70,8 +69,8 @@ class UserTest extends TestCase
    */
   public function testDeleteEmails($id)
   {
-    Users::deleteEmailsByUserId($id);
-    $userId = Users::getUserIdByEmail($this->email);
+    Users::deleteEmailsById($id);
+    $userId = Users::findByEmail($this->address);
     $this->assertNull($userId);
   }
 

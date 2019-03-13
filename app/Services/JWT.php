@@ -9,87 +9,50 @@ class JWT
 {
 	protected $key;
 
-	private $token;
-
-	private $tokenData;
-
-	private $tokenInfo;
+	protected $data;
 
 	public function __construct()
 	{
 		$this->key = config('jwt.secret');
 	}
 
-	public function encode($data)
-	{
-		return JWTBase::encode((array) $data, $this->key);
-	}
-
 	public function decode($token)
 	{
 		try {
-			return JWTBASE::decode($token, $this->key, ['HS256']);
+			$data = JWTBASE::decode(substr($token, 7), $this->key, ['HS256']);
+			$this->data = $data;
+
+			return $data;
 		} catch (\Exception $e) {
-			return false;
+			return null;
 		}
 	}
 
-	public function generate($data)
+	public function encode($data)
 	{
-		if (is_array($data)) {
-			$data = (object) $data;
-		}
-
-		$now = Carbon::now()->timestamp;
-		$rfa = Carbon::now()->addDay(1000)->timestamp;
-		$exp = Carbon::now()->addDay(1000)->timestamp;
+		$data = (object) $data;
 		$data = clone $data;
-		$data->iat = $now;
-		$data->exp = $exp;
-		$data->rfa = $rfa;
+		$data->iat = Carbon::now()->timestamp;
+		$data->exp = Carbon::now()->addDay(1000)->timestamp;
+		$data->rfa = Carbon::now()->addDay(1000)->timestamp;
 
-		return (object) [
-			'token' => 'Bearer '.$this->encode((array) $data),
-			'expired_at' => $exp,
-			'refresh_at' => $rfa,
-		];
-	}
-
-	public function refresh()
-	{
-		return $this->generate($this->tokenData);
+		return 'Bearer ' . JWTBase::encode((array) $data, $this->key);
 	}
 
 	public function isNeedToRefresh()
 	{
 		$now = Carbon::now()->timestamp;
-		$rfa = $this->tokenInfo->rfa;
 
-		return $rfa < $now;
+		return $this->data->exp < $now;
 	}
 
-	public function parse($token)
+	public function refresh()
 	{
-		$this->token = substr($token, 7);
-		$this->tokenInfo = $this->decode($this->token);
-		if (!$this->tokenInfo) return null;
-
-		$tokenData = clone $this->tokenInfo;
-		unset($tokenData->iat);
-		unset($tokenData->exp);
-		unset($tokenData->rfa);
-		$this->tokenData = $tokenData;
-
-		return $this->tokenData;
+		return $this->encode($this->data);
 	}
 
-	public function token()
+	public function data()
 	{
-		return $this->token;
-	}
-
-	public function tokenData()
-	{
-		return $this->tokenData;
+		return $this->data;
 	}
 }

@@ -8,24 +8,39 @@ use Carbon\Carbon;
 
 class Users
 {
-  protected $visibleColumns = [
-    'id', 'is_dropped',
-    'created_at', 'dropped_at',
-    'username', 'points', 'roles',
-    'first_name', 'second_name'
+  protected $visibleUserColumns = [
+    'users.id', 'users.is_dropped',
+    'users.created_at', 'users.dropped_at',
+    'users.username', 'users.points', 'users.roles',
+    'users.first_name', 'users.second_name',
   ];
 
-  protected $invisibleColumns = [
-    'password'
+  protected $invisibleUserColumns = [
+    'users.password'
   ];
 
-  public function findById($id)
+  public function findById($id, $columns = [])
   {
+    $select = sizeof($columns) ? $columns : $this->visibleUserColumns;
     $user = DB::table('users')
-      ->select($this->visibleColumns)
+      ->select($select)
       ->where('id', $id)
       ->first();
+    if ($user) {
+      $user->roles = json_decode($user->roles);
+    }
 
+    return $user;
+  }
+
+  public function findByEmail($email, $columns = [])
+  {
+    $select = sizeof($columns) ? $columns : $this->visibleUserColumns;
+    $user = DB::table('users')
+      ->leftJoin('user_emails', 'id', 'user_id')
+      ->select($select)
+      ->where('address', $email)
+      ->first();
     if ($user) {
       $user->roles = json_decode($user->roles);
     }
@@ -36,7 +51,7 @@ class Users
   public function search($page, $perPage, $where)
   {
     return DB::table('users')
-      ->select($this->visibleColumns)
+      ->select($this->visibleUserColumns)
       ->where($where)
       ->andWhere('id', '>', 0)
       ->offset($perPage * ($page - 1))
@@ -90,25 +105,11 @@ class Users
     DB::table('users')->where('id', $id)->update($update);
   }
 
-  public function getEmailByUserId($userId)
+  public function findEmailById($userId)
   {
     $where = ['user_id' => $userId];
 
     return DB::table('user_emails')->where($where)->first();
-  }
-
-  public function getUserIdByEmail($address)
-  {
-    $email = DB::table('user_emails')
-      ->where('address', $address)
-      ->select('user_id')
-      ->first();
-
-    if ($email) {
-      return $email->user_id;
-    } else {
-      return null;
-    }
   }
 
   public function createEmail($userId, $address)
@@ -140,7 +141,7 @@ class Users
   //   DB::table('user_emails')->where($where)->delete();
   // }
 
-  public function deleteEmailsByUserId($userId)
+  public function deleteEmailsById($userId)
   {
     $where = ['user_id' => $userId];
 
@@ -284,6 +285,10 @@ class Users
 
   //   return $id;
   // }
+
+  /**
+   * helpers in testing
+   */
 
   public function createRootUser($password = '123456')
   {

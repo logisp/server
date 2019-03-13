@@ -9,14 +9,14 @@ abstract class TestCase extends BaseTestCase
 {
   protected function withRootUser()
   {
-    $token = Test::user()->token->token;
+    $token = Test::user()->token;
 
     return $this->withHeader('Authorization', $token);
   }
 
   protected function withRootAdmin()
   {
-    $token = Test::admin()->token->token;
+    $token = Test::admin()->token;
 
     return $this->withHeader('Authorization', $token);
   }

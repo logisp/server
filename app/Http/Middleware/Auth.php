@@ -10,25 +10,20 @@ use App\Domain\Facades\admins;
 
 class Auth
 {
-	public $account;
-
-	public $tokenData;
-
-	public $system = null;
-
 	public function handle($request, Closure $next, $system = null, $role = null)
 	{
 		$token = request()->header('authorization');
-		$tokenData = JWT::parse($token);
+		$tokenData = JWT::decode($token);
+
 		if (!$tokenData) {
 			return error_response('token_is_invalid', 403);
 		}
 
-		if (!$this->checkSystem($tokenData->sys, $system)) {
+		if (!$this->checkSystem($tokenData->aud, $system)) {
 			return error_response('invalid_system_token', 403);
 		};
 
-		$account = $this->getAccount($tokenData->id, $tokenData->sys);
+		$account = $this->getAccount($tokenData->id, $tokenData->aud);
 		if (!$account) {
 			return error_response('invalid_system_account', 403);
 		}
@@ -39,6 +34,7 @@ class Auth
 
 		AuthService::setSystem($system);
 		AuthService::setAccount($account);
+		AuthService::setTokenData($tokenData);
 
 		return $next($request);
 	}
@@ -50,23 +46,21 @@ class Auth
 		return $sys === $system;
 	}
 
+	private function getAccount($id, $sys)
+	{
+		if ($sys === 'user') {
+			return Users::findById($id);
+		} else if ($sys === 'admin') {
+			return Admins::findById($id);
+		} else {
+			return null;
+		}
+	}
+
 	private function checkRole($roles, $role)
 	{
 		if (!$role) return true;
 
 		return in_array($role, $roles);
-	}
-
-	private function getAccount($id, $sys)
-	{
-		$account = null;
-
-		if ($sys === 'user') {
-			$account = Users::findById($id);
-		} else if ($sys === 'admin') {
-			$account = Admins::findById($id);
-		}
-
-		return $account;
 	}
 }

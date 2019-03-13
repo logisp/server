@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use DB;
 use JWT;
+use Auth;
+use Transaction;
 use App\Domain\Facades\Users;
 use App\Domain\Facades\Admins;
 
@@ -11,26 +13,29 @@ class AuthController extends Controller
 {
 	public function generateUserTokenByEmail()
 	{
-		$email = $this->get('email', 'required');
+		$address = $this->get('address', 'required');
 		$password = $this->get('password', 'required');
 
-		$id = Users::getUserIdByEmail($email);
-		$result = Users::matchPassword($id, $password);
+		$result = false;
+		$user = Users::findByEmail($address);
+		if ($user) {
+			$result = Users::matchPassword($user->id, $password);
+		}
 
-		if ($result) {
-			$data = [
-				'sys' => 'admin',
-				'id' => $id
-			];
-
-			return $this->success([
-				'message' => 'success_to_generate_user_token',
-				'token' => JWT::generate($data)
-			]);
-		} else {
+		if (!$result) {
 			return $this->fail([
 				'message' => 'fail_to_generate_user_token'
 			], 400);
+		} else {
+			$token = JWT::encode([
+				'aud' => 'user',
+				'id' => $user->id
+			]);
+
+			return $this->success([
+				'message' => 'success_to_generate_user_token',
+				'token' => $token
+			]);
 		}
 	}
 
@@ -39,50 +44,42 @@ class AuthController extends Controller
 		$username = $this->get('username', 'required');
 		$password = $this->get('password', 'required');
 
-		$id = Admins::findByUsername($username)->id;
-		$result = Admins::matchPassword($id, $password);
+		$result = false;
+		$admin = Admins::findByUsername($username);
+		if ($admin) {
+			$result = Admins::matchPassword($admin->id, $password);
+		}
 
-		if ($result) {
+		if (!$result) {
+			return $this->fail([
+				'message' => 'fail_to_generate_admin_token'
+			], 400);
+		} else {
 			$data = [
-				'sys' => 'admin',
-				'id' => $id
+				'aud' => 'admin',
+				'id' => $admin->id
 			];
 
 			return $this->success([
 				'message' => 'success_to_generate_admin_token',
-				'token' => JWT::generate($data)
+				'token' => JWT::encode($data)
 			]);
-		} else {
-			return $this->fail([
-				'message' => 'fail_to_generate_admin_token'
-			], 400);
 		}
 	}
 
 	public function checkToken()
 	{
-		if (JWT::isNeedToRefresh()) {
-			$token = JWT::refresh();
+		$token = JWT::isNeedToRefresh() ? JWT::refresh() : '';
 
-			return $this->success([
-				'message' => 'token_is_refreshed',
-				'token' => $token
-			]);
-		} else {
-			return $this->success('token_is_valid', 200);
-		}
+		return [
+			'token' => $token,
+			'system' => Auth::tokenData()->aud,
+			'account' => Auth::account()
+		];
 	}
 
 	public function checkRootRole()
 	{
 		return $this->success('role_is_valid', 200);
-	}
-
-	public function refresh()
-	{
-		return success_response([
-			'message' => 'success_to_refresh_token',
-			'token' => JWT::refresh()
-		], 201);
 	}
 }

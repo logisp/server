@@ -35,7 +35,7 @@ class RouteServiceProvider extends ServiceProvider
 	 */
 	public function map()
 	{
-		$this->mapOpenRoutes();
+		$this->oapAuthRoutes();
 		$this->mapFeeRoutes();
 		$this->mapUserRoutes();
 		$this->mapPointRoutes();
@@ -66,10 +66,10 @@ class RouteServiceProvider extends ServiceProvider
 			->group(base_path('routes/http/test.php'));
 	}
 
-	protected function mapOpenRoutes()
+	protected function oapAuthRoutes()
 	{
 		Route::namespace($this->namespace)
-			->group(base_path('routes/http/open.php'));
+			->group(base_path('routes/http/auth.php'));
 	}
 
 	protected function mapFeeRoutes()
