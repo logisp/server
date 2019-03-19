@@ -50,4 +50,9 @@ class Test
   {
     return $this->admin;
   }
+
+  public function password()
+  {
+    return env('ROOT_PASSWORD');
+  }
 }

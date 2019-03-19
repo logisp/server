@@ -74,6 +74,23 @@ class UserTest extends TestCase
     $this->assertNull($userId);
   }
 
+  /**
+   * @depends testCreate
+   */
+  public function testUpdateCartIds($id)
+  {
+    Users::updateCartIds($id, [1, 2, 3, 4]);
+    $this->assertTrue(true);
+  }
+
+  /**
+   * @depends testCreate
+   */
+  public function testGetCartIds($id)
+  {
+    $ids = Users::getCartIds($id);
+    $this->assertEquals($ids, [1, 2, 3, 4]);
+  }
   // /**
   //  * @depends testCreate
   //  */

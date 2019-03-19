@@ -24,9 +24,9 @@ class UsersTableCreate extends Migration
 
 			$table->string('first_name')->nullable();
 			$table->string('second_name')->nullable();
+			$table->jsonb('cart_ids')->default('[]');
 		});
-
-		// DB::statement("ALTER TABLE \"users\" ADD COLUMN roles integer[] DEFAULT '{}'");
+		// DB::statement("ALTER TABLE \"users\" ADD COLUMN cart_ids integer[] DEFAULT '{}'");
 	}
 
 	public function down()

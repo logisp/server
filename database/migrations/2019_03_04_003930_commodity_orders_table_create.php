@@ -14,12 +14,19 @@ class CommodityOrdersTableCreate extends Migration
 
 			$table->boolean('is_inbound')->default(false);
 			$table->boolean('is_discrepant')->default(false);
+			$table->boolean('is_abandoning')->default(false);
 			$table->boolean('is_abandoned')->default(false);
 			$table->boolean('is_outbound')->default(false);
+			$table->boolean('is_created_in_amazon')->default(false);
+
+			$table->boolean('is_to_abandon')->default(false);
+			$table->boolean('is_to_create_in_amazon')->default(false);
+			$table->boolean('is_to_update_discrepant')->default(false);
+
 			// $table->boolean('is_filed')->default(false);
 			// $table->boolean('is_deleted')->default(false);
-			$table->boolean('is_abandoned_confirming')->default(false);
-			$table->boolean('is_discrepant_confirming')->default(false);
+			$table->boolean('is_abandoned_confirming')->default(false);//
+			$table->boolean('is_discrepant_confirming')->default(false);//
 
 			$table->timestamp('created_at')->useCurrent();
 			// $table->timestamp('inbound_at')->nullable();

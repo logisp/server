@@ -12,7 +12,7 @@ class AuthTest extends TestCase
 
     $response = $this->post('/auth/user/email', [
       'address' => $user->email->address,
-      'password' => 'aeoikj',
+      'password' => Test::password(),
     ]);
     // dd ($response->decodeResponseJson());
     $response->assertStatus(201);
@@ -24,7 +24,7 @@ class AuthTest extends TestCase
 
     $response = $this->post('/auth/admin/username', [
       'username' => $admin->username,
-      'password' => 'aeoikj'
+      'password' => Test::password()
     ]);
 
     $response->assertStatus(201);

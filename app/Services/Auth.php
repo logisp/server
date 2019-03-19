@@ -27,16 +27,12 @@ class Auth
 
   public function user()
   {
-    if ($this->system === 'user') {
-      return $this->account;
-    }
+    return $this->account;
   }
 
   public function admin()
   {
-    if ($this->system === 'admin') {
-      return $this->account;
-    }
+    return $this->account;
   }
 
   public function system()

@@ -123,6 +123,32 @@ class Users
 
     return true;
   }
+
+  public function addCartsId($userId, $cartId)
+  {
+    DB::table('users')->where('id', $userId)->update([
+      'cart_ids' => DB::raw('cart_ids || $cartId')
+    ]);
+  }
+
+  public function getCartIds($userId)
+  {
+    $ids = DB::table('users')
+      ->where('id', $userId)
+      ->select(['cart_ids'])
+      ->first()
+      ->cart_ids;
+
+    return json_decode($ids);
+  }
+
+  public function updateCartIds($userId, $ids)
+  {
+    DB::table('users')
+      ->where('id', $userId)
+      ->update(['cart_ids' => json_encode($ids)]);
+  }
+
   // public function setEmailVerified($address, $isVerified = true)
   // {
   //   $where = ['address' => $address];

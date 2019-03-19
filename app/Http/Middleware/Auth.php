@@ -14,12 +14,13 @@ class Auth
 	{
 		$token = request()->header('authorization');
 		$tokenData = JWT::decode($token);
+		$isRoot = ($tokenData->id === 0);
 
 		if (!$tokenData) {
 			return error_response('token_is_invalid', 403);
 		}
 
-		if (!$this->checkSystem($tokenData->aud, $system)) {
+		if (!$isRoot && !$this->checkSystem($tokenData->aud, $system)) {
 			return error_response('invalid_system_token', 403);
 		};
 
@@ -44,6 +45,11 @@ class Auth
 		if (!$system) return true;
 
 		return $sys === $system;
+	}
+
+	private function isRoot($id)
+	{
+		return $id === 0;
 	}
 
 	private function getAccount($id, $sys)

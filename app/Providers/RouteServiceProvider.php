@@ -35,14 +35,15 @@ class RouteServiceProvider extends ServiceProvider
 	 */
 	public function map()
 	{
-		$this->oapAuthRoutes();
-		$this->mapFeeRoutes();
-		$this->mapUserRoutes();
-		$this->mapPointRoutes();
-		$this->mapOrderRoutes();
+		$this->mapRouteFile('auth');
+		$this->mapRouteFile('fees');
+		$this->mapRouteFile('users');
+		$this->mapRouteFile('points');
+		$this->mapRouteFile('orders');
+		$this->mapRouteFile('carts');
 
 		if (env('APP_TEST')) {
-			$this->mapTestRoutes();
+			$this->mapRouteFile('test');
 		}
 	}
 
@@ -60,16 +61,28 @@ class RouteServiceProvider extends ServiceProvider
 	//          ->group(base_path('routes/api.php'));
 	// }
 
+	protected function mapRouteFile($file)
+	{
+		Route::namespace($this->namespace)
+			->group(base_path("routes/http/$file.php"));
+	}
+
 	protected function mapTestRoutes()
 	{
 		Route::namespace($this->namespace)
 			->group(base_path('routes/http/test.php'));
 	}
 
-	protected function oapAuthRoutes()
+	protected function mapAuthRoutes()
 	{
 		Route::namespace($this->namespace)
 			->group(base_path('routes/http/auth.php'));
+	}
+
+	protected function mapCartRoutes()
+	{
+		Route::namespace($this->namespace)
+			->group(base_path('routes/http/cart.php'));
 	}
 
 	protected function mapFeeRoutes()
