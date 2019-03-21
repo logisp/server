@@ -61,11 +61,11 @@ class Admins
     return $id;
   }
 
-  public function createRootAdmin($password = '123456')
+  public function createRootAdmin($username, $password)
   {
     $insert = [
       'id' => 0,
-      'username' => 'root',
+      'username' => $username,
       'password' => Hash::make($password),
       'roles' => '["root"]'
     ];
@@ -73,20 +73,20 @@ class Admins
     DB::table('user_admins')->insert($insert);
   }
 
-  public function createTestAdmin($username, $password = '123456')
-  {
-    $minId = DB::table('users_admins')
-      ->select(DB::raw('min(id)'))
-      ->first()
-      ->min;
+  // public function createTestAdmin($username, $password)
+  // {
+  //   $minId = DB::table('users_admins')
+  //     ->select(DB::raw('min(id)'))
+  //     ->first()
+  //     ->min;
 
-    $insert = [
-      'id' => $minId--,
-      'password' => Hash::make($password)
-    ];
+  //   $insert = [
+  //     'id' => $minId--,
+  //     'password' => Hash::make($password)
+  //   ];
 
-    DB::table('user_admins')->insert($insert);
-  }
+  //   DB::table('user_admins')->insert($insert);
+  // }
 
   public function deleteById($id)
   {

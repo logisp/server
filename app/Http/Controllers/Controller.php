@@ -39,7 +39,7 @@ class Controller extends BaseController
 		return $this->viaParams($params, $rules);
 	}
 
-	public function get($name, $rule, $default = null)
+	public function get($name, $rule = 'nullable', $default = null)
 	{
 		$params = request([$name]);
 

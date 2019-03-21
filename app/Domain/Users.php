@@ -316,7 +316,7 @@ class Users
    * helpers in testing
    */
 
-  public function createRootUser($password = '123456')
+  public function createRootUser($password)
   {
     $insert = [
       'id' => 0,

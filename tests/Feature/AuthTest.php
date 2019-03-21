@@ -14,7 +14,6 @@ class AuthTest extends TestCase
       'address' => $user->email->address,
       'password' => Test::password(),
     ]);
-    // dd ($response->decodeResponseJson());
     $response->assertStatus(201);
   }
 
@@ -54,21 +53,21 @@ class AuthTest extends TestCase
     $response->assertStatus(200);
   }
 
-  public function testCheckUserTokenFail()
-  {
-    $response = $this->withRootAdmin()
-      ->post('auth/user/check');
+  // public function testCheckUserTokenFail()
+  // {
+  //   $response = $this->withRootAdmin()
+  //     ->post('auth/user/check');
 
-    $response->assertStatus(403);
-  }
+  //   $response->assertStatus(403);
+  // }
 
-  public function testCheckAdminTokenFail()
-  {
-    $response = $this->withRootUser()
-      ->post('auth/admin/check');
+  // public function testCheckAdminTokenFail()
+  // {
+  //   $response = $this->withRootUser()
+  //     ->post('auth/admin/check');
 
-    $response->assertStatus(403);
-  }
+  //   $response->assertStatus(403);
+  // }
 
   public function testCheckRootRole()
   {
@@ -78,11 +77,11 @@ class AuthTest extends TestCase
     $response->assertStatus(200);
   }
 
-  public function testCheckFailRole()
-  {
-    $response = $this->withRootUser()
-      ->post('auth/user/role/fail/check');
+  // public function testCheckFailRole()
+  // {
+  //   $response = $this->withRootUser()
+  //     ->post('auth/user/role/fail/check');
 
-    $response->assertStatus(403);
-  }
+  //   $response->assertStatus(403);
+  // }
 }

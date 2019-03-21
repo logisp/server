@@ -3,10 +3,9 @@
 namespace App\Http\Middleware;
 
 use JWT;
-use Auth as AuthService;
 use Closure;
 use App\Domain\Facades\Users;
-use App\Domain\Facades\Admins;
+use App\Services\Facades\Cart as CartService;
 
 class Auth
 {
@@ -38,35 +37,5 @@ class Auth
 		AuthService::setTokenData($tokenData);
 
 		return $next($request);
-	}
-
-	private function checkSystem($sys, $system)
-	{
-		if (!$system) return true;
-
-		return $sys === $system;
-	}
-
-	private function isRoot($id)
-	{
-		return $id === 0;
-	}
-
-	private function getAccount($id, $sys)
-	{
-		if ($sys === 'user') {
-			return Users::findById($id);
-		} else if ($sys === 'admin') {
-			return Admins::findById($id);
-		} else {
-			return null;
-		}
-	}
-
-	private function checkRole($roles, $role)
-	{
-		if (!$role) return true;
-
-		return in_array($role, $roles);
 	}
 }

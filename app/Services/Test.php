@@ -53,6 +53,6 @@ class Test
 
   public function password()
   {
-    return env('ROOT_PASSWORD');
+    return env('ROOT_ACCOUNT_PASSWORD');
   }
 }

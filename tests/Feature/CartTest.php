@@ -41,7 +41,7 @@ class CartTest extends TestCase
   public function testDelete($id)
   {
     $response = $this->withRootUser()
-      ->post('cart/delete', ['ids' => [$id]]);
+      ->post('cart/delete', ['cart_ids' => [$id]]);
     $response->assertStatus(201);
   }
 }

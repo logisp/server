@@ -20,7 +20,7 @@ class CartsTableCreate extends Migration
 			$table->string('outbound_method')->default('amazon');
 			$table->string('asin')->nullable();
 			$table->string('sku')->nullable();
-			$table->string('remark')->nullable();
+			$table->string('user_remark')->nullable();
 			$table->string('usage_degree')->default('new');
 			$table->string('amazon_good_id')->nullable();
 

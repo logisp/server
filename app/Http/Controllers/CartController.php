@@ -40,7 +40,7 @@ class CartController extends Controller
   public function delete()
   {
     $userId = Auth::user()->id;
-    $ids = $this->get('ids', 'required|array');
+    $ids = $this->get('cart_ids');
 
     $newIds = array_values(
       array_diff(Users::getCartIds($userId), $ids)
