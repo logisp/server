@@ -7,7 +7,7 @@ use Closure;
 use App\Domain\Facades\Users;
 use App\Services\Facades\Cart as CartService;
 
-class Auth
+class Cart
 {
 	public function handle($request, Closure $next, $system = null, $role = null)
 	{

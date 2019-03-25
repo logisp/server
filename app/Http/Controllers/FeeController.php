@@ -2,46 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
+use Transaction;
 use App\Domain\Facades\Fees;
 
 class FeeController extends Controller
 {
-  public function create()
+  public function all()
   {
-    $name = $this->get('name', 'required');
-    $points = $this->get('points', 'required');
-    $comment = $this->get('comment', 'required');
-
-    Fees::create($name, $points, $comment);
-
-    return $this->success('success_to_create_fee');
-  }
-
-  public function delete()
-  {
-    $name = $this->get('name', 'required');
-    Fees::deleteByName($name);
-
-    return $this->success('success_to_delete_fee');
+    return Fees::all();
   }
 
   public function updatePoints()
   {
+    $adminId = Auth::account()->id;
     $name = $this->get('name', 'required');
     $points = $this->get('points', 'required');
+    $comment = $this->get('comment', 'nullable');
 
+    Transaction::begin();
     Fees::updatePoints($name, $points);
+    Fees::log([
+      'admin_id' => $adminId,
+      'name' => $name,
+      'points' => $points,
+      'comment' => $comment
+    ]);
+    Transaction::commit();
 
     return $this->success('success_to_adjust_points');
   }
 
-  public function updateComment()
+  public function searchLogs()
   {
-    $name = $this->get('name', 'required');
-    $comment = $this->get('comment', 'required');
+    $page = $this->get('page', 'nullable|numeric', 1);
+    $perPage = $this->get('perPage', 'nullable|numeric', 20);
+    $name = $this->get('name', 'nullable');
 
-    Fees::updateComment($name, $comment);
-
-    return $this->success('success_to_update_comment');
+    return Fees::getFeeLogs($page, $perPage, $name);
   }
 }

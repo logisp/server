@@ -24,7 +24,7 @@ class OrdersTableCreate extends Migration
 			$table->boolean('is_produced_on_amazon')->default(false);
 			$table->boolean('is_abandoned')->default(false);
 			$table->boolean('is_to_produce_on_amazon')->default(false);
-			$table->boolean('is_to_confirm_appendant')->default(false);
+			$table->boolean('is_to_check_appendant')->default(false);
 			$table->boolean('is_to_repack')->default(false);
 			$table->boolean('is_to_check')->default(false);
 			$table->boolean('is_to_clean')->default(false);
@@ -42,6 +42,7 @@ class OrdersTableCreate extends Migration
 			$table->string('logistic_id')->nullable();
 			$table->string('asin')->nullable();
 			$table->string('sku')->nullable();
+			$table->string('description')->nullable();
 			$table->string('usage_degree')->default('new');
 			$table->string('amazon_good_id')->nullable();
 			$table->double('buying_price')->nullable();

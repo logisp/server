@@ -10,8 +10,12 @@ class FeeTest extends TestCase
 
   public function testCreate()
   {
-    $id = Fees::create($this->name, 1000, 'test_fee_item');
-    $this->assertNotNull($id);
+    Fees::create([
+      'name' => $this->name,
+      'points' => 1000,
+      'comment' => 'test_fee_item'
+    ]);
+    $this->assertTrue(true);
   }
 
   /**
@@ -24,23 +28,13 @@ class FeeTest extends TestCase
   }
 
   /**
-   * @depends testCreate
-   */
-  public function testGetByName()
-  {
-    $fee = Fees::getByName($this->name);
-    $this->assertNotNull($fee);
-  }
-
-  /**
    * @depents testCreate
    */
   public function testUpdatePoints()
   {
     $points = 998;
     Fees::updatePoints($this->name, $points);
-    $fee = Fees::getByName($this->name);
-    $this->assertTrue($fee->points === $points);
+    $this->assertTrue(true);
   }
 
   /**
@@ -50,17 +44,40 @@ class FeeTest extends TestCase
   {
     $comment = 'test_set_comment';
     Fees::updateComment($this->name, $comment);
-    $fee = Fees::getByName($this->name);
-    $this->assertTrue($fee->comment === $comment);
+    $this->assertTrue(true);
   }
 
   /**
    * @depends testCreate
    */
-  public function testDeleteByName()
+  public function testDelete()
   {
-    Fees::deleteByName($this->name);
-    $fee = Fees::getByName($this->name);
-    $this->assertNull($fee);
+    Fees::delete($this->name);
+    $this->assertTrue(true);
+  }
+
+  public function testLog()
+  {
+    Fees::log([
+      'name' => 'test',
+      'admin_id' => 0,
+      'points' => 1000,
+      'comment' => 'test_comment'
+    ]);
+    $this->assertTrue(true);
+  }
+
+  public function testGetFeeLogs()
+  {
+    $fees = Fees::getFeeLogs();
+    $this->assertTrue(true);
+  }
+
+  /**
+   * @depends testLog
+   */
+  public function testDeleteFeeLogs()
+  {
+    return Fees::deleteFeeLogs('test');
   }
 }

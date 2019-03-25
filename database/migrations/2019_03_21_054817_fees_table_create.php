@@ -9,10 +9,9 @@ class FeesTableCreate extends Migration
 	public function up()
 	{
 		Schema::create('fees', function ($table) {
-			$table->increments('id');
-			$table->string('name')->unique();
+			$table->double('points');
+			$table->string('name')->primary();
 			$table->string('comment')->nullable();
-			$table->integer('points');
 		});
 	}
 

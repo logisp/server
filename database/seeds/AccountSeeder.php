@@ -5,7 +5,7 @@ use Illuminate\Database\Seeder;
 use App\Domain\Facades\Users;
 use App\Domain\Facades\Admins;
 
-class TestAccountSeeder extends Seeder
+class AccountSeeder extends Seeder
 {
 	public function run()
 	{

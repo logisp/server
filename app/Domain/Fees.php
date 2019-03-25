@@ -11,39 +11,57 @@ class Fees
     return DB::table('fees')->get();
   }
 
-  public function getByName($name)
+  public function create($insert)
   {
-    return DB::table('fees')->where('name', $name)->first();
+    DB::table('fees')->insert($insert);
   }
 
-  public function create($name, $points, $comment = null)
-  {
-    $insert = [
-      'name' => $name,
-      'points' => $points,
-      'comment' => $comment
-    ];
-    $id = DB::table('fees')->insertGetId($insert);
-
-    return $id;
-  }
-
-  public function deleteByName($name)
+  public function delete($name)
   {
     DB::table('fees')->where('name', $name)->delete();
   }
 
   public function updatePoints($name, $points)
   {
-    $where = ['name' => $name];
     $update = ['points' => $points];
     DB::table('fees')->where('name', $name)->update($update);
   }
 
   public function updateComment($name, $comment)
   {
-    $where = ['name' => $name];
     $update = ['comment' => $comment];
-    DB::table('fees')->where($where)->update($update);
+    DB::table('fees')->where('name', $name)->update($update);
+  }
+
+  public function log($insert)
+  {
+    DB::table('fee_logs')->insert($insert);
+  }
+
+  public function getFeeLogs($page, $perPage, $name)
+  {
+    $query = DB::table('fee_logs')
+      ->select(DB::raw('count(*)'));
+    $name && $query->where('name', $name);
+    $total = $query->pluck('count')->first();
+
+    $query = DB::table('fee_logs')
+      ->orderBy('created_at', 'desc')
+      ->limit($perPage)
+      ->offset($perPage * ($page - 1));
+    $name && $query->where('name', $name);
+
+    return [
+      'data' => $query->get(),
+      'perPage' => $perPage,
+      'total' => $total,
+      'page' => $page,
+    ];
+  }
+
+  public function deleteFeeLogs($name)
+  {
+    $res = DB::table('fee_logs')->where('name', $name)->delete();
+    dd ($res);
   }
 }

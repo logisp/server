@@ -6,56 +6,33 @@ use Test;
 
 class FeeTest extends TestCase
 {
-  public function testCreate()
+  public function testAll()
   {
-    $name = '___test_fee___';
-
     $response = $this->withRootAdmin()
-      ->post('fees/create', [
-        'name' => $name,
-        'points' => 1000,
-        'comment' => 'test_fee_comment'
-      ]);
-
-    $response->assertStatus(201);
-
-    return $name;
+      ->post('fees/all');
+    $response->assertStatus(200);
   }
 
-  /**
-   * @depends testCreate
-   */
-  public function testUpdatePoints($name)
+  public function testUpdatePoints()
   {
+    $comment = 'test_update';
     $response = $this->withRootAdmin()
       ->post('fees/points/update', [
-        'name' => $name,
-        'points' => 10000
+        'name' => 'fba_outbound_standard_new',
+        'points' => 100,
+        'comment' => $comment,
       ]);
     $response->assertStatus(201);
   }
 
-  /**
-   * @depends testCreate
-   */
-  public function testUpdateComment($name)
+  public function testSearchLogs()
   {
     $response = $this->withRootAdmin()
-      ->post('fees/comment/update', [
-        'name' => $name,
-        'comment' => 'test_fee_comment_update'
+      ->post('fees/logs/search', [
+        'page' => 1,
+        'name' => 'fba_outbound_standard_new'
       ]);
 
-    $response->assertStatus(201);
-  }
-
-  /**
-   * @depends testCreate
-   */
-  public function testDelete($name)
-  {
-    $response = $this->withRootAdmin()
-      ->post('fees/delete', ['name' => $name]);
-    $response->assertStatus(201);
+    $response->assertStatus(200);
   }
 }

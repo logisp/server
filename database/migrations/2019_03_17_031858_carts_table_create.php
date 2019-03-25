@@ -12,7 +12,7 @@ class CartsTableCreate extends Migration
 			$table->increments('id');
 
 			$table->boolean('is_to_produce_on_amazon')->default(false);
-			$table->boolean('is_to_confirm_appendant')->default(false);
+			$table->boolean('is_to_check_appendant')->default(false);
 			$table->boolean('is_to_check')->default(false);
 			$table->boolean('is_to_clean')->default(false);
 			$table->boolean('is_to_repack')->default(false);
@@ -20,7 +20,7 @@ class CartsTableCreate extends Migration
 			$table->string('outbound_method')->default('amazon');
 			$table->string('asin')->nullable();
 			$table->string('sku')->nullable();
-			$table->string('user_remark')->nullable();
+			$table->string('description')->nullable();
 			$table->string('usage_degree')->default('new');
 			$table->string('amazon_good_id')->nullable();
 
