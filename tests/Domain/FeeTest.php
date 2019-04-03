@@ -78,6 +78,7 @@ class FeeTest extends TestCase
    */
   public function testDeleteFeeLogs()
   {
-    return Fees::deleteFeeLogs('test');
+    Fees::deleteFeeLogs('test');
+    $this->assertTrue(true);
   }
 }

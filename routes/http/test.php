@@ -1,5 +1,6 @@
 <?php
 
+Route::get('test', 'TestController@test');
 Route::get('test/debug', 'TestController@testDebug')->middleware('debug');
 
 /**
@@ -8,8 +9,8 @@ Route::get('test/debug', 'TestController@testDebug')->middleware('debug');
  */
 Route::middleware('test')->group(function () {
   Route::get('test/test', 'TestController@testDebug');
-  Route::post('auth/user/check', 'AuthController@checkToken')->middleware('auth:user');
-  Route::post('auth/admin/check', 'AuthController@checkToken')->middleware('auth:admin');
+  Route::post('auth/user/check', 'AuthController@parseToken')->middleware('auth:user');
+  Route::post('auth/admin/check', 'AuthController@parseToken')->middleware('auth:admin');
   Route::post('auth/user/role/root/check', 'AuthController@checkRootRole')->middleware('auth:user,root');
   Route::post('auth/user/role/fail/check', 'AuthController@checkRootRole')->middleware('auth:user,fail');
 });

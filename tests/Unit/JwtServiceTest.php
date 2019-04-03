@@ -6,18 +6,12 @@ use JWT;
 
 class JwtServiceTest extends TestCase
 {
-  protected $user = [
-    'id' => 1,
-    'name' => 'foo',
-    'email' => 'bar',
-    'roles' => [
-      1, 3, 4, 2
-    ]
-  ];
+  protected $aud = 10086;
+  protected $sub = 2009;
 
   public function testEncode()
   {
-    $token = JWT::encode($this->user);
+    $token = JWT::encode('test', 1);
     $this->assertNotNull($token);
 
     return $token;
@@ -26,19 +20,12 @@ class JwtServiceTest extends TestCase
   /**
    * @depends testEncode
    */
-  public function testDecode($token)
+  public function testParse($token)
   {
-    $tokenData = JWT::decode($token);
-
-    $this->assertNotNull($tokenData);
-  }
-
-  /**
-   * @depends testEncode
-   */
-  public function testRefresh($token)
-  {
-    $token = JWT::refresh();
-    $this->assertNotNull($token);
+    JWT::decode($token);
+    $payload = JWT::payload();
+    $sub = JWT::sub();
+    $aud = JWT::aud();
+    $this->assertTrue(true);
   }
 }

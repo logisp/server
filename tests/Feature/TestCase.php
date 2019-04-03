@@ -7,6 +7,11 @@ use Tests\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
+  protected function withCustomerAuth($token)
+  {
+    return $this->withHeader('Authorization', $token);
+  }
+
   protected function withRootUser()
   {
     $token = Test::user()->token;

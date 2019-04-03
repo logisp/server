@@ -80,7 +80,7 @@ class OrderTest extends TestCase
    */
   public function testInbound($ids)
   {
-    $response = $this->withRootUser()
+    $response = $this->withRootAdmin()
       ->post('order/inbound', [
         'order_ids' => $ids,
       ]);
@@ -92,7 +92,7 @@ class OrderTest extends TestCase
    */
   public function testConfirm($ids)
   {
-    $response = $this->withRootUser()
+    $response = $this->withRootAdmin()
       ->post('order/confirm', [
         'order_ids' => $ids,
         'confirmed' => true
@@ -105,7 +105,7 @@ class OrderTest extends TestCase
    */
   public function testAbandoned($ids)
   {
-    $response = $this->withRootUser()
+    $response = $this->withRootAdmin()
       ->post('order/abandoned', [
         'order_ids' => $ids,
       ]);
@@ -119,7 +119,7 @@ class OrderTest extends TestCase
   public function testDelete($ids)
   {
     $response = $this->withRootUser()
-      ->post('cart/delete', ['cart_ids' => $ids]);
+      ->post('order/delete', ['order_ids' => $ids]);
     $response->assertStatus(201);
   }
 }

@@ -13,51 +13,45 @@ class Auth
 	public function handle($request, Closure $next, $system = null, $role = null)
 	{
 		$token = request()->header('authorization');
-		$tokenData = JWT::decode($token);
-
-		if (!$tokenData) {
+		$payload = JWT::decode($token);
+		if (!$this->checkPayload($payload)) {
 			return error_response('token_is_invalid', 403);
 		}
-
-		$isRoot = ($tokenData->id === 0);
-
-		if (!$isRoot && !$this->checkSystem($tokenData->aud, $system)) {
-			return error_response('invalid_system_token', 403);
-		};
-
-		$account = $this->getAccount($tokenData->id, $tokenData->aud);
+		$aud = $payload->aud;
+		$sub = $payload->sub;
+		$account = $this->getAccount($aud, $sub);
 		if (!$account) {
-			return error_response('system_account_is_not_existed', 403);
+			return error_response('account_is_now_invalid', 403);
 		}
-
-		if (!$isRoot && !$this->checkRole($account->roles, $role)) {
-			return error_response('invalid_role', 403);
+		// $isRoot = in_array('root', $account->roles);
+		if (!$this->checkSystem($sub, $system)) {
+			return error_response('account_system_is_invalid', 403);
 		}
-
-		AuthService::setSystem($system);
+		if (!$this->checkRole($account->roles, $role)) {
+			return error_response('account_role_is_invalid', 403);
+		}
 		AuthService::setAccount($account);
-		AuthService::setTokenData($tokenData);
 
 		return $next($request);
 	}
 
-	private function checkSystem($sys, $system)
+	private function checkPayload($payload)
 	{
-		if (!$system) return true;
-
-		return $sys === $system;
+		return $payload && isset($payload->sub) && isset($payload->aud);
 	}
 
-	private function isRoot($id)
+	private function checkSystem($sub, $system)
 	{
-		return $id === 0;
+		if (!$system || $system === 'null') return true;
+
+		return $system === $sub;
 	}
 
-	private function getAccount($id, $sys)
+	private function getAccount($id, $system)
 	{
-		if ($sys === 'user') {
+		if ($system === 'user') {
 			return Users::findById($id);
-		} else if ($sys === 'admin') {
+		} else if ($system === 'admin') {
 			return Admins::findById($id);
 		} else {
 			return null;

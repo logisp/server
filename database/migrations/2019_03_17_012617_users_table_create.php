@@ -9,10 +9,9 @@ class UsersTableCreate extends Migration
 	public function up()
 	{
 		Schema::create('users', function ($table) {
-			$table->increments('id');
+			$table->integer('id')->primary();
 
 			$table->boolean('is_dropped')->default(false);
-
 			$table->timestamp('created_at')->useCurrent();
 			$table->timestamp('dropped_at')->nullable();
 
@@ -20,17 +19,21 @@ class UsersTableCreate extends Migration
 			$table->string('password');
 			$table->jsonb('roles')->default('[]');
 
-			$table->integer('points')->default(0);
+			// $table->string('first_name')->nullable();
+			// $table->string('second_name')->nullable();
 
-			$table->string('first_name')->nullable();
-			$table->string('second_name')->nullable();
+			$table->integer('points')->default(0);
 			$table->jsonb('cart_ids')->default('[]');
+
+			$table->string('name')->default('');
+			$table->string('mobile')->default('');
+			$table->string('zipcode')->default('');
+			$table->string('address')->default('');
 		});
-		// DB::statement("ALTER TABLE \"users\" ADD COLUMN cart_ids integer[] DEFAULT '{}'");
 	}
 
 	public function down()
 	{
-		Schema::dropIfExists('users');
+		Schema::drop('users');
 	}
 }

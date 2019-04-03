@@ -9,7 +9,7 @@ class UserAdminsTableCreate extends Migration
 	public function up()
 	{
 		Schema::create('user_admins', function ($table) {
-			$table->increments('id');
+			$table->integer('id');
 
 			$table->boolean('is_dropped')->default(false);
 
@@ -30,6 +30,6 @@ class UserAdminsTableCreate extends Migration
 
 	public function down()
 	{
-		Schema::dropIfExists('user_admins');
+		Schema::drop('user_admins');
 	}
 }

@@ -18,6 +18,7 @@ class Carts
 
   public function add($insert = [])
   {
+    $insert['id'] = $this->genreateId();
     return DB::table('carts')->insertGetId($insert);
   }
 
@@ -29,5 +30,10 @@ class Carts
   public function delete(array $ids)
   {
     return DB::table('carts')->whereIn('id', $ids)->delete();
+  }
+
+  protected function genreateId()
+  {
+    return Facades\Series::generate('cart_id');
   }
 }

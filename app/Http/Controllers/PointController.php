@@ -21,7 +21,7 @@ class PointController extends Controller
   {
     return Points::adminSearch();
   }
-  
+
   public function userCreateOrder()
   {
     $userId = Auth::user()->id;

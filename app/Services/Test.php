@@ -9,35 +9,33 @@ use App\Domain\Facades\Admins;
 
 class Test
 {
-  private $user;
-
-  private $admin;
+  protected $user;
+  protected $admin;
+  protected $email;
+  protected $username;
+  protected $password;
 
   public function __construct()
   {
+    $this->password = env('ROOT_PASSWORD');
+    $this->username = env('ROOT_USERNAME');
+    $this->email = $this->username . '@logisp.com';
     $this->setUser();
     $this->setAdmin();
   }
 
   private function setUser()
   {
-    $user = Users::findById(0);
-    $data = [ 'aud' => 'user', 'id' => 0 ];
-    $user->token = JWT::encode($data);
-    $user->email = Users::findEmailById(0);
-
+    $user = Users::findByUsername($this->username);
+    $user->token = JWT::encode('user', $user->id);
+    $user->email = Users::findEmail($this->email);
     $this->user = $user;
   }
 
   private function setAdmin()
   {
-    $admin = Admins::findById(0);
-    $data = [
-      'aud' => 'admin',
-      'id' => 0,
-    ];
-    $admin->token = JWT::encode($data);
-
+    $admin = Admins::findByUsername($this->username);
+    $admin->token = JWT::encode('admin', $admin->id);
     $this->admin = $admin;
   }
 
@@ -51,8 +49,13 @@ class Test
     return $this->admin;
   }
 
+  public function username()
+  {
+    return $this->username;
+  }
+
   public function password()
   {
-    return env('ROOT_ACCOUNT_PASSWORD');
+    return $this->password;
   }
 }

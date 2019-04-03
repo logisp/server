@@ -4,17 +4,22 @@ namespace Tests\Feature;
 
 class UserTest extends TestCase
 {
+  protected $address = 'unittest@logisp.com';
+  protected $password = '123456';
+
   public function testRegisterByEmail()
   {
     $params = [
-      'address' => 'test@gmail.com',
-      'password' => '12341234'
+      'address' => $this->address,
+      'password' => $this->password
     ];
     $response = $this->post('user/register/email', $params);
-    $id = $response->decodeResponseJson()['id'];
-    $response->assertStatus(201);
-
-    return $id;
+    $status = $response->status();
+    if ($status === 422) {
+      $this->assertTrue(true);
+    } else {
+      $response->assertStatus(201);
+    }
   }
 
   /**
@@ -23,7 +28,21 @@ class UserTest extends TestCase
   public function testDeleteUser($id)
   {
     $response = $this->withRootUser()
-      ->post('user/delete', ['id' => $id]);
+      ->post('user/delete/email', ['address' => $this->address]);
+    $response->assertStatus(201);
+  }
+
+  public function testGetPersonal()
+  {
+    $response = $this->withRootUser()
+      ->post('user/personal/get');
+    $response->assertStatus(200);
+  }
+
+  public function testUpdatePersonal()
+  {
+    $response = $this->withRootUser()
+      ->post('user/personal/update', ['name' => 'test']);
     $response->assertStatus(201);
   }
 }

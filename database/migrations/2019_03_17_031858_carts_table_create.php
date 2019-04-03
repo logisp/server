@@ -9,7 +9,7 @@ class CartsTableCreate extends Migration
 	public function up()
 	{
 		Schema::create('carts', function ($table) {
-			$table->increments('id');
+			$table->bigInteger('id')->primary();
 
 			$table->boolean('is_to_produce_on_amazon')->default(false);
 			$table->boolean('is_to_check_appendant')->default(false);
@@ -34,6 +34,6 @@ class CartsTableCreate extends Migration
 
 	public function down()
 	{
-		Schema::dropIfExists('carts');
+		Schema::drop('carts');
 	}
 }

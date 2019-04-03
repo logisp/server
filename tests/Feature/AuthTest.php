@@ -29,7 +29,7 @@ class AuthTest extends TestCase
     $response->assertStatus(201);
   }
 
-  public function testCheckToken()
+  public function testParseToken()
   {
     $response = $this->withRootUser()
       ->post('auth/token/check');
@@ -51,6 +51,13 @@ class AuthTest extends TestCase
       ->post('auth/user/check');
 
     $response->assertStatus(200);
+  }
+
+  public function testToggleRootAuth()
+  {
+    $response = $this->withRootUser()
+      ->post('auth/root/toggle');
+    $response->assertStatus(201);
   }
 
   // public function testCheckUserTokenFail()

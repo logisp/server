@@ -175,7 +175,6 @@ return [
     */
 
     'aliases' => [
-
         'App' => Illuminate\Support\Facades\App::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
         // 'Auth' => Illuminate\Support\Facades\Auth::class,
@@ -197,7 +196,7 @@ return [
         // 'Mail' => Illuminate\Support\Facades\Mail::class,
         // 'Notification' => Illuminate\Support\Facades\Notification::class,
         // 'Password' => Illuminate\Support\Facades\Password::class,
-        'Queue' => Illuminate\Support\Facades\Queue::class,
+        // 'Queue' => Illuminate\Support\Facades\Queue::class,
         // 'Redirect' => Illuminate\Support\Facades\Redirect::class,
         // 'Redis' => Illuminate\Support\Facades\Redis::class,
         'Request' => Illuminate\Support\Facades\Request::class,
@@ -216,7 +215,6 @@ return [
         'Connection' => App\Services\Facades\Connection::class,
         'Transaction' => App\Services\Facades\Transaction::class,
         'Test' => App\Services\Facades\Test::class
-
     ],
 
 ];

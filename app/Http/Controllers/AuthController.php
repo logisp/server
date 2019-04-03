@@ -16,65 +16,60 @@ class AuthController extends Controller
 		$address = $this->get('address', 'required');
 		$password = $this->get('password', 'required');
 
-		$result = false;
-		$user = Users::findByEmail($address);
-		if ($user) {
-			$result = Users::matchPassword($user->id, $password);
-		}
+		$result = Users::matchPasswordByEmail($address, $password);
 
 		if (!$result) {
 			return $this->fail([
 				'message' => 'fail_to_generate_user_token'
 			], 400);
 		} else {
-			$token = JWT::encode([
-				'aud' => 'user',
-				'id' => $user->id
-			]);
-
+			$id = Users::findEmail($address)->user_id;
 			return $this->success([
-				'message' => 'success_to_generate_user_token',
-				'token' => $token
+				'token' => JWT::encode('user', $id),
+				'message' => 'success_to_generate_user_token'
 			]);
 		}
 	}
 
 	public function generateAdminTokenByUsername()
 	{
-		$username = $this->get('username', 'required');
 		$password = $this->get('password', 'required');
+		$username = $this->get('username', 'required');
 
-		$result = false;
-		$admin = Admins::findByUsername($username);
-		if ($admin) {
-			$result = Admins::matchPassword($admin->id, $password);
-		}
+		$where = ['username' => $username];
+		$result = Admins::matchPassword($where, $password);
 
 		if (!$result) {
 			return $this->fail([
 				'message' => 'fail_to_generate_admin_token'
 			], 400);
 		} else {
-			$data = [
-				'aud' => 'admin',
-				'id' => $admin->id
-			];
-
+			$admin = Admins::findByUsername($username);
 			return $this->success([
 				'message' => 'success_to_generate_admin_token',
-				'token' => JWT::encode($data)
+				'token' => JWT::encode('admin', $admin->id)
 			]);
 		}
 	}
 
-	public function checkToken()
+	public function rootToggle()
+	{
+		$auth = JWT::sub() === 'user' ? 'admin' : 'user';
+
+		return success_response([
+			'message' => 'success_to_toggle_root_auth',
+			'token' => JWT::encode($auth, JWT::aud())
+		]);
+	}
+
+	public function parseToken()
 	{
 		$token = JWT::isNeedToRefresh() ? JWT::refresh() : '';
 
 		return [
 			'token' => $token,
-			'system' => Auth::tokenData()->aud,
-			'account' => Auth::account()
+			'auth' => JWT::sub(),
+			'roles' => Auth::account()->roles
 		];
 	}
 

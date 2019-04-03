@@ -9,8 +9,11 @@ class AccountSeeder extends Seeder
 {
 	public function run()
 	{
-		Users::createRootUser(env('ROOT_ACCOUNT_PASSWORD'));
-		Users::createRootEmail(env('ROOT_USER_EMAIL'));
-		Admins::createRootAdmin(env('ROOT_ADMIN_USERNAME'), env('ROOT_ACCOUNT_PASSWORD'));
+		$username = env('ROOT_USERNAME');
+		$password = env('ROOT_PASSWORD');
+
+		$id = Admins::createRootAdmin($username, $password);
+		Users::createEmail($id, $username . '@logisp.com');
+		Users::createRootUser($id, $username, $password);
 	}
 }

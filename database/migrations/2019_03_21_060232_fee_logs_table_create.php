@@ -19,6 +19,6 @@ class FeeLogsTableCreate extends Migration
 
 	public function down()
 	{
-		Schema::dropIfExists('fee_logs');
+		Schema::drop('fee_logs');
 	}
 }

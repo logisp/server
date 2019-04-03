@@ -6,22 +6,29 @@ use App\Domain\Facades\Admins;
 
 class AdminTest extends TestCase
 {
-  protected $username = '__test_admins__username__';
+  protected $username = '@test';
   protected $password = '123456';
 
-  public function testCreateByUsername()
+  public function testCreate()
   {
-    $username = $this->username;
-    $password = $this->password;
+    $admin = Admins::findByUsername($this->username);
+    if ($admin) {
+      $this->assertTrue(true);
+      return $admin->id;
+    } else {
+      $id = Admins::create([
+        'roles' => [],
+        'username' => $this->username,
+        'password' => $this->password
+      ]);
+      $this->assertTrue(true);
 
-    $id = Admins::createByUsername($username, $password);
-    $this->assertNotNull($id);
-
-    return $id;
+      return $id;
+    }
   }
 
   /**
-   * @depends testCreateByUsername
+   * @depends testCreate
    */
   public function testFindById($id)
   {
@@ -30,7 +37,7 @@ class AdminTest extends TestCase
   }
 
   /**
-   * @depends testCreateByUsername
+   * @depends testCreate
    */
   public function testFindByUsername($id)
   {
@@ -39,20 +46,39 @@ class AdminTest extends TestCase
   }
 
   /**
-   * @depends testCreateByUsername
+   * @depends testCreate
    */
-  public function testMatchPassword($id)
+  public function testSearch($id)
   {
-    $result = Admins::matchPassword($id, $this->password);
+    $admins = Admins::search();
+    $this->assertNotNull($admins);
+  }
+
+  /**
+   * @depends testCreate
+   */
+  public function testMatchPasswordById($id)
+  {
+    $result = Admins::matchPassword(['id' => $id], $this->password);
     $this->assertTrue($result);
   }
 
   /**
-   * @depends testCreateByUsername
+   * @depends testCreate
    */
-  public function testDeleteById($id)
+  public function testMatchPasswordByUsername($id)
   {
-    Admins::deleteById($id);
+    $where = ['username' => $this->username];
+    $result = Admins::matchPassword($where, $this->password);
+    $this->assertTrue($result);
+  }
+
+  /**
+   * @depends testCreate
+   */
+  public function testDelete($id)
+  {
+    Admins::delete($id);
     $this->assertNull(Admins::findById($id));
   }
 }

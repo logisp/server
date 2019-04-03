@@ -38,7 +38,7 @@ class Fees
     DB::table('fee_logs')->insert($insert);
   }
 
-  public function getFeeLogs($page, $perPage, $name)
+  public function getFeeLogs($page = 1, $perPage = 10, $name = null)
   {
     $query = DB::table('fee_logs')
       ->select(DB::raw('count(*)'));
@@ -62,6 +62,5 @@ class Fees
   public function deleteFeeLogs($name)
   {
     $res = DB::table('fee_logs')->where('name', $name)->delete();
-    dd ($res);
   }
 }

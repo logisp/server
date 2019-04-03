@@ -6,21 +6,24 @@ use App\Domain\Facades\Orders;
 
 class OrderTest extends TestCase
 {
+  protected $userId = 0;
+
   public function testCreate()
   {
-    $id = 0;
-    $insert = [
-      'id' => $id,
-      'outbound_method' => 'amazon'
-    ];
-    Orders::create(0, [$insert]);
+    $insert = ['outbound_method' => 'amazon'];
+    Orders::create($this->userId, [$insert]);
     $this->assertTrue(true);
+  }
 
-    return $id;
+  public function testUserSearch()
+  {
+    $orders = Orders::userSearch($this->userId);
+    $this->assertNotNull($orders);
+    return $orders[0]->id;
   }
 
   /**
-   * @depends testCreate
+   * @depends testUserSearch
    */
   public function testUpdate($id)
   {
@@ -30,7 +33,7 @@ class OrderTest extends TestCase
   }
 
   /**
-   * @depends testCreate
+   * @depends testUserSearch
    */
   public function testFindById($id)
   {
@@ -39,7 +42,7 @@ class OrderTest extends TestCase
   }
 
   /**
-   * @depends testCreate
+   * @depends testUserSearch
    */
   public function testGetUserId($id)
   {
@@ -48,16 +51,7 @@ class OrderTest extends TestCase
   }
 
   /**
-   * @depends testCreate
-   */
-  public function testUserSearch()
-  {
-    $orders = Orders::userSearch(0);
-    $this->assertNotNull($orders);
-  }
-
-  /**
-   * @depends testCreate
+   * @depends testUserSearch
    */
   public function testAdminSearch()
   {
@@ -66,7 +60,7 @@ class OrderTest extends TestCase
   }
 
   // /**
-  //  * @depends testCreate
+  //  * @depends testUserSearch
   //  */
   // public function testLog($id)
   // {
@@ -76,7 +70,7 @@ class OrderTest extends TestCase
   // }
 
   // /**
-  //  * @depends testCreate
+  //  * @depends testUserSearch
   //  */
   // public function testDeleteLogsById($id)
   // {
@@ -86,7 +80,7 @@ class OrderTest extends TestCase
   // }
 
   /**
-   * @depends testCreate
+   * @depends testUserSearch
    */
   public function testDelete($id)
   {

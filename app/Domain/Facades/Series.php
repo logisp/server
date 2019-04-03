@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Middleware\Facades;
+namespace App\Domain\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class Auth extends Facade
+class Series extends Facade
 {
   protected static function getFacadeAccessor()
   {
-    return 'App\Http\Middleware\Auth';
+    return 'App\Domain\Series';
   }
 }

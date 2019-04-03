@@ -18,6 +18,6 @@ class IndividualOutboundsTableCreate extends Migration
 
 	public function down()
 	{
-		Schema::dropIfExists('individual_outbounds');
+		Schema::drop('individual_outbounds');
 	}
 }

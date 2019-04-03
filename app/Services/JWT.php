@@ -9,50 +9,63 @@ class JWT
 {
 	protected $key;
 
-	protected $data;
+	protected $alg = 'HS256';
+
+	protected $payload;
 
 	public function __construct()
 	{
 		$this->key = config('jwt.secret');
 	}
 
+	public function encode(string $sub, string $aud)
+	{
+		return 'Bearer ' . JWTBase::encode([
+			'sub' => $sub,
+			'aud' => $aud,
+			'iat' => Carbon::now()->timestamp,
+			'exp' => Carbon::now()->addDay(365)->timestamp,
+			'rfa' => Carbon::now()->addDay(365)->timestamp
+		], $this->key);
+	}
+
 	public function decode($token)
 	{
 		try {
-			$data = JWTBASE::decode(substr($token, 7), $this->key, ['HS256']);
-			$this->data = $data;
+			$payload = JWTBASE::decode(substr($token, 7), $this->key, [$this->alg]);
+			$this->payload = $payload;
 
-			return $data;
+			return $payload;
 		} catch (\Exception $e) {
 			return null;
 		}
 	}
 
-	public function encode($data)
+	public function payload()
 	{
-		$data = (object) $data;
-		$data = clone $data;
-		$data->iat = Carbon::now()->timestamp;
-		$data->exp = Carbon::now()->addDay(1000)->timestamp;
-		$data->rfa = Carbon::now()->addDay(1000)->timestamp;
+		return $this->payload;
+	}
 
-		return 'Bearer ' . JWTBase::encode((array) $data, $this->key);
+	public function sub()
+	{
+		return $this->payload->sub;		
+	}
+
+	public function aud()
+	{
+		return $this->payload->aud;
 	}
 
 	public function isNeedToRefresh()
 	{
 		$now = Carbon::now()->timestamp;
+		$exp = $this->payload->exp;
 
-		return $this->data->exp < $now;
+		return $exp < $now;
 	}
 
 	public function refresh()
 	{
-		return $this->encode($this->data);
-	}
-
-	public function data()
-	{
-		return $this->data;
+		return $this->encode($this->sub(), $this->aud());
 	}
 }

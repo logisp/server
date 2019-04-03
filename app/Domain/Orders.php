@@ -6,6 +6,11 @@ use DB;
 
 class Orders
 {
+  protected function generateId()
+  {
+    return Facades\Series::generate('order_id');
+  }
+
   public function findById($id)
   {
     return DB::table('orders')->where('id', $id)->first();
@@ -28,6 +33,7 @@ class Orders
   {
     foreach ($insert as &$data) {
       $data['user_id'] = $userId;
+      $data['id'] = $this->generateId();
     }
 
     DB::table('orders')->insert($insert);

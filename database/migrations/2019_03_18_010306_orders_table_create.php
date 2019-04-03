@@ -9,7 +9,7 @@ class OrdersTableCreate extends Migration
 	public function up()
 	{
 		Schema::create('orders', function ($table) {
-			$table->increments('id');
+			$table->bigInteger('id')->primary();
 			$table->integer('user_id');
 			$table->enum('status', [
 				'posting', 'inbounding', 'inbounded',
@@ -54,6 +54,6 @@ class OrdersTableCreate extends Migration
 
 	public function down()
 	{
-		Schema::dropIfExists('orders');
+		Schema::drop('orders');
 	}
 }

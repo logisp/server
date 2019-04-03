@@ -12,6 +12,21 @@ class Admins
     'first_name', 'second_name'
   ];
 
+  public function create($data)
+  {
+    if (isset($data['roles'])) {
+      $data['roles'] = json_encode($data['roles']);
+    }
+    if (!isset($data['id'])) {
+      $data['id'] = $this->generateId();
+    }
+
+    $data['password'] = Hash::make($data['password']);
+    DB::table('user_admins')->insert($data);
+
+    return $data['id'];
+  }
+
   public function findById($id)
   {
     $admin = DB::table('user_admins')
@@ -33,14 +48,14 @@ class Admins
       ->where('username', $username)
       ->first();
 
-    if ($admin) {
-      $admin->roles = json_decode($admin->roles);
-    }
-
-    return $admin;
+      if ($admin) {
+        $admin->roles = json_decode($admin->roles);
+      }
+  
+      return $admin;
   }
 
-  public function search($page, $perPage, $where)
+  public function search($page = 1, $perPage = 10, $where = [])
   {
     return DB::table('user_admins')
       ->select($this->visibleColumns)
@@ -50,61 +65,38 @@ class Admins
       ->get();
   }
 
-  public function createByUsername($username, $password)
+  public function matchPassword($where, $password)
   {
-    $insert = [
-      'username' => $username,
-      'password' => Hash::make($password)
-    ];
-    $id = DB::table('user_admins')->insertGetId($insert);
+    $admin = DB::table('user_admins')
+      ->select('password')
+      ->where($where)
+      ->first();
+    if ($admin) {
+      return Hash::check($password, $admin->password);
+    } else {
+      return false;
+    }
+  }
 
-    return $id;
+  public function delete($id)
+  {
+    DB::table('user_admins')->where('id', $id)->delete();
   }
 
   public function createRootAdmin($username, $password)
   {
-    $insert = [
-      'id' => 0,
+    return $this->create([
+      'roles' => ['root'],
       'username' => $username,
-      'password' => Hash::make($password),
-      'roles' => '["root"]'
-    ];
-
-    DB::table('user_admins')->insert($insert);
+      'password' => $password
+    ]);
   }
 
-  // public function createTestAdmin($username, $password)
-  // {
-  //   $minId = DB::table('users_admins')
-  //     ->select(DB::raw('min(id)'))
-  //     ->first()
-  //     ->min;
-
-  //   $insert = [
-  //     'id' => $minId--,
-  //     'password' => Hash::make($password)
-  //   ];
-
-  //   DB::table('user_admins')->insert($insert);
-  // }
-
-  public function deleteById($id)
+  /**
+   * 
+   */
+  private function generateId()
   {
-    $where = ['id' => $id];
-    DB::table('user_admins')->where($where)->delete();
-  }
-
-  public function matchPassword($id, $password)
-  {
-    $where = ['id' => $id];
-    $hashedPassword = DB::table('user_admins')
-      ->select('password')
-      ->where($where)
-      ->first()
-      ->password;
-
-    $result = Hash::check($password, $hashedPassword);
-
-    return $result;
+    return Facades\Series::generate('admin_id');
   }
 }

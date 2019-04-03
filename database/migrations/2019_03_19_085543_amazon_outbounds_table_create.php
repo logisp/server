@@ -16,6 +16,6 @@ class AmazonOutboundsTableCreate extends Migration
 
 	public function down()
 	{
-		Schema::dropIfExists('amazon_outbounds');
+		Schema::drop('amazon_outbounds');
 	}
 }

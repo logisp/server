@@ -8,108 +8,19 @@ use Carbon\Carbon;
 
 class Users
 {
-  protected $visibleUserColumns = [
-    'users.id', 'users.is_dropped',
-    'users.created_at', 'users.dropped_at',
-    'users.username', 'users.points', 'users.roles',
-    'users.first_name', 'users.second_name',
-  ];
-
-  protected $invisibleUserColumns = [
-    'users.password'
-  ];
-
-  public function findById($id, $columns = [])
-  {
-    $select = sizeof($columns) ? $columns : $this->visibleUserColumns;
-    $user = DB::table('users')
-      ->select($select)
-      ->where('id', $id)
-      ->first();
-    if ($user) {
-      $user->roles = json_decode($user->roles);
-    }
-
-    return $user;
-  }
-
-  public function findByEmail($email, $columns = [])
-  {
-    $select = sizeof($columns) ? $columns : $this->visibleUserColumns;
-    $user = DB::table('users')
-      ->leftJoin('user_emails', 'id', 'user_id')
-      ->select($select)
-      ->where('address', $email)
-      ->first();
-    if ($user) {
-      $user->roles = json_decode($user->roles);
-    }
-
-    return $user;
-  }
-
-  public function search($page, $perPage, $where)
-  {
-    return DB::table('users')
-      ->select($this->visibleUserColumns)
-      ->where($where)
-      ->andWhere('id', '>', 0)
-      ->offset($perPage * ($page - 1))
-      ->limit($perPage)
-      ->get();
-  }
-
   // 需要绑定 email 或 username
-  public function createUser($password)
+  public function create($data)
   {
-    $insert = [
-      'password' => Hash::make($password)
-    ];
-    $id = DB::table('users')->insertGetId($insert);
-
-    return $id;
-  }
-
-  public function updateUser($ids, $update)
-  {
-    if (!is_array($ids)) {
-      $ids = [$ids];
+    if (!isset($data['id'])) {
+      $data['id'] = $this->generateId();
     }
+    if (isset($data['roles'])) {
+      $data['roles'] = json_encode($data['roles']);
+    }
+    $data['password'] = Hash::make($data['password']);
+    DB::table('users')->insert($data);
 
-    DB::table('users')->whereIn('id', [$ids])->update($update);
-  }
-
-  public function deleteById($id)
-  {
-    DB::table('users')->where('id', $id)->delete();
-  }
-
-  public function matchPassword($id, $password)
-  {
-    $where = ['id' => $id];
-    $hashedPassword = DB::table('users')
-      ->select('password')
-      ->where($where)
-      ->first()
-      ->password;
-
-    $result = Hash::check($password, $hashedPassword);
-
-    return $result;
-  }
-
-  public function setUsername($id, $username)
-  {
-    $update = ['username' => $username];
-
-    DB::table('users')->where('id', $id)->update($update);
-  }
-
-  public function findEmailById($userId)
-  {
-    $where = ['user_id' => $userId];
-
-    return DB::table('user_emails')->where($where)->first();
+    return $data['id'];
   }
 
   public function createEmail($userId, $address)
@@ -123,6 +34,113 @@ class Users
 
     return true;
   }
+
+  // 无需测试
+  public function find($where, $columns = [])
+  {
+    $select = sizeof($columns) ? $columns : '*';
+    $user = DB::table('users')
+      ->select($select)
+      ->where($where)
+      ->first();
+
+    if ($user && isset($user->roles)) {
+      $user->roles = json_decode($user->roles);
+    }
+
+    return $user;
+  }
+
+  public function findById($id, $columns = [])
+  {
+    return $this->find(['id' => $id], $columns);
+  }
+
+  public function findByUsername($username, $columns = [])
+  {
+    return $this->find(['username' => $username], $columns);
+  }
+
+  public function findEmail($address)
+  {
+    return DB::table('user_emails')
+      ->where('address', $address)
+      ->first();
+  }
+
+  public function findByEmail($address, $columns = [])
+  {
+    $email = DB::table('user_emails')
+      ->where('address', $address)
+      ->select(['user_id'])
+      ->first();
+    if ($email) {
+      return $this->find(['id' => $email->user_id], $columns);
+    } else {
+      return null;
+    }
+  }
+
+  public function search($page = 1, $perPage = 10, $where = [])
+  {
+    return DB::table('users')
+      ->select($this->visibleUserColumns)
+      ->where($where)
+      ->andWhere('id', '>', 0)
+      ->offset($perPage * ($page - 1))
+      ->limit($perPage)
+      ->get();
+  }
+
+  public function update($where, $update)
+  {
+    DB::table('users')->where($where)->update($update);
+  }
+
+  public function matchPassword($where, $password)
+  {
+    $user = DB::table('users')
+      ->select('password')
+      ->where($where)
+      ->first();
+    if ($user) {
+      return Hash::check($password, $user->password);
+    } else {
+      return false;
+    }
+  }
+
+  public function matchPasswordByEmail($address, $password)
+  {
+    // $user = DB::table('users')
+    //   ->select('password')
+    //   ->leftJoin('user_emails', 'id', 'user_id')
+    //   ->where('address', $address)
+    //   ->first();
+    $user = $this->findByEmail($address, ['password']);
+    if ($user) {
+      return Hash::check($password, $user->password);
+    } else {
+      return false;
+    }
+  }
+
+  public function deleteEmail($where)
+  {
+    DB::table('user_emails')->where($where)->delete();
+  }
+
+  public function delete($id)
+  {
+    DB::table('users')->where('id', $id)->delete();
+  }
+
+  // public function findEmailById($userId)
+  // {
+  //   $where = ['user_id' => $userId];
+
+  //   return DB::table('user_emails')->where($where)->first();
+  // }
 
   public function addCartsId($userId, $cartId)
   {
@@ -167,11 +185,19 @@ class Users
   //   DB::table('user_emails')->where($where)->delete();
   // }
 
-  public function deleteEmailsById($userId)
+  public function createRootUser($id, $username, $password)
   {
-    $where = ['user_id' => $userId];
+    return $this->create([
+      'id' => $id,
+      'roles' => ['root'],
+      'username' => 'root',
+      'password' => $password,
+    ]);
+  }
 
-    DB::table('user_emails')->where($where)->delete();
+  protected function generateId()
+  {
+    return Facades\Series::generate('user_id');
   }
 
   // public function getAmazonAccount($userId)
@@ -311,31 +337,4 @@ class Users
 
   //   return $id;
   // }
-
-  /**
-   * helpers in testing
-   */
-
-  public function createRootUser($password)
-  {
-    $insert = [
-      'id' => 0,
-      'username' => 'root',
-      'password' => Hash::make($password),
-      'roles' => '["root"]'
-    ];
-
-    DB::table('users')->insert($insert);
-  }
-
-  public function createRootEmail($email)
-  {
-    $insert = [
-      'user_id' => 0,
-      'address' => $email
-    ];
-
-    DB::table('user_emails')->insert($insert);
-  }
-
 }

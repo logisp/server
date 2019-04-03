@@ -17,6 +17,6 @@ class FeesTableCreate extends Migration
 
 	public function down()
 	{
-		Schema::dropIfExists('fees');
+		Schema::drop('fees');
 	}
 }

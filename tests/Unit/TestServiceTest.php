@@ -6,13 +6,10 @@ use Test;
 
 class TestServiceTest extends TestCase
 {
-  public function testUser()
+  public function test()
   {
     $this->assertNotNull(Test::user());
-  }
-
-  public function testAdmin()
-  {
     $this->assertNotNull(Test::admin());
+    $this->assertNotNull(Test::password());
   }
 }
