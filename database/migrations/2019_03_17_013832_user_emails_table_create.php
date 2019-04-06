@@ -9,10 +9,10 @@ class UserEmailsTableCreate extends Migration
 	public function up()
 	{
 		Schema::create('user_emails', function ($table) {
-			$table->integer('user_id')->unique();
+			$table->bigInteger('user_id')->unique();
 			$table->string('address')->unique();
 			$table->boolean('is_verified')->default(false);
-			$table->timestamp('created_at')->useCurrent();
+			// $table->timestamp('created_at')->useCurrent();
 		});
 	}
 

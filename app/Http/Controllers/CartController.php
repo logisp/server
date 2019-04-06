@@ -19,7 +19,7 @@ class CartController extends Controller
     $ids[] = $id;
     Users::updateCartIds($userId, $ids);
 
-    return success_response([
+    return $this->success([
       'data' => Carts::find($id),
       'message' => 'success_to_add_cart'
     ]);
@@ -51,7 +51,7 @@ class CartController extends Controller
     Carts::delete($ids);
     Transaction::commit();
 
-    return success_response('success_to_delete_cart_by_ids');
+    return $this->success('success_to_delete_cart_by_ids');
   }
 
   public function update()
@@ -61,6 +61,6 @@ class CartController extends Controller
 
     Carts::update($id, $update);
 
-    return success_response('success_to_update_cart');
+    return $this->success('success_to_update_cart');
   }
 }

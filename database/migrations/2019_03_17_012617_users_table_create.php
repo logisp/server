@@ -11,18 +11,15 @@ class UsersTableCreate extends Migration
 		Schema::create('users', function ($table) {
 			$table->integer('id')->primary();
 
-			$table->boolean('is_dropped')->default(false);
 			$table->timestamp('created_at')->useCurrent();
-			$table->timestamp('dropped_at')->nullable();
-
-			$table->string('username')->nullable()->unique();
-			$table->string('password');
-			$table->jsonb('roles')->default('[]');
+			$table->string('state')->enum(['using', 'abandoned'])->default('using');
 
 			// $table->string('first_name')->nullable();
 			// $table->string('second_name')->nullable();
-
+			$table->string('password');
+			$table->string('username')->nullable()->unique();
 			$table->integer('points')->default(0);
+			$table->jsonb('roles')->default('[]');
 			$table->jsonb('cart_ids')->default('[]');
 
 			$table->string('name')->default('');

@@ -47,8 +47,8 @@ class Fees
 
     $query = DB::table('fee_logs')
       ->orderBy('created_at', 'desc')
-      ->limit($perPage)
-      ->offset($perPage * ($page - 1));
+      ->offset($perPage * ($page - 1))
+      ->limit($perPage);
     $name && $query->where('name', $name);
 
     return [

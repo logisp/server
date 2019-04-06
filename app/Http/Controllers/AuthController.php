@@ -56,7 +56,7 @@ class AuthController extends Controller
 	{
 		$auth = JWT::sub() === 'user' ? 'admin' : 'user';
 
-		return success_response([
+		return $this->success([
 			'message' => 'success_to_toggle_root_auth',
 			'token' => JWT::encode($auth, JWT::aud())
 		]);

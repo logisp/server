@@ -23,6 +23,35 @@ class Users
     return $data['id'];
   }
 
+  public function adminSearch($page = 1, $perPage = 10)
+  {
+    $selects = [
+      'u.roles',
+      'u.id', 'u.name', 'u.address', 'u.mobile',
+      'e.address as email', 'u.points', 'u.created_at'
+    ];
+    $total = DB::table('users')
+      ->select(DB::raw('count(*)'))
+      ->pluck('count')
+      ->first();
+
+    $users = DB::table('users as u')
+      ->select($selects)
+      ->leftJoin('user_emails as e', 'u.id', 'e.user_id')
+      ->offset($perPage * ($page - 1))
+      ->limit($perPage)
+      ->get()
+      ->toArray();
+    $users = $this->transformUsers($users);
+
+    return [
+      'total' => $total,
+      'page' => $page,
+      'perPage' => $perPage,
+      'data' => $users,
+    ];
+  }
+
   public function createEmail($userId, $address)
   {
     $insert = [
@@ -44,11 +73,10 @@ class Users
       ->where($where)
       ->first();
 
-    if ($user && isset($user->roles)) {
-      $user->roles = json_decode($user->roles);
-    }
-
-    return $user;
+    return $this->transformUsers([$user])[0];
+    // if ($user && isset($user->roles)) {
+    //   $user->roles = json_decode($user->roles);
+    // }
   }
 
   public function findById($id, $columns = [])
@@ -81,16 +109,16 @@ class Users
     }
   }
 
-  public function search($page = 1, $perPage = 10, $where = [])
-  {
-    return DB::table('users')
-      ->select($this->visibleUserColumns)
-      ->where($where)
-      ->andWhere('id', '>', 0)
-      ->offset($perPage * ($page - 1))
-      ->limit($perPage)
-      ->get();
-  }
+  // public function search($page = 1, $perPage = 10, $where = [])
+  // {
+  //   return DB::table('users')
+  //     ->select($this->visibleUserColumns)
+  //     ->where($where)
+  //     ->andWhere('id', '>', 0)
+  //     ->offset($perPage * ($page - 1))
+  //     ->limit($perPage)
+  //     ->get();
+  // }
 
   public function update($where, $update)
   {
@@ -198,6 +226,17 @@ class Users
   protected function generateId()
   {
     return Facades\Series::generate('user_id');
+  }
+
+  protected function transformUsers(array $users)
+  {
+    foreach ($users as &$user) {
+      if ($user && isset($user->roles)) {
+        $user->roles = json_decode($user->roles);
+      }
+    }
+
+    return $users;
   }
 
   // public function getAmazonAccount($userId)

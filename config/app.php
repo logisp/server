@@ -214,7 +214,7 @@ return [
         'Auth' => App\Services\Facades\Auth::class,
         'Connection' => App\Services\Facades\Connection::class,
         'Transaction' => App\Services\Facades\Transaction::class,
-        'Test' => App\Services\Facades\Test::class
+        'Test' => App\Services\Facades\Test::class,
     ],
 
 ];

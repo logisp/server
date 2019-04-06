@@ -31,6 +31,15 @@ class UserTest extends TestCase
   /**
    * @depends testCreate
    */
+  public function testAdminSearch()
+  {
+    $users = Users::adminSearch();
+    $this->assertNotNull($users);
+  }
+
+  /**
+   * @depends testCreate
+   */
   public function testCreateEmail($id)
   {
     $email = Users::findEmail($this->address);

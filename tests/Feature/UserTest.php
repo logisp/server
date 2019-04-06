@@ -22,6 +22,13 @@ class UserTest extends TestCase
     }
   }
 
+  public function testAdminSearch()
+  {
+    $params = ['page' => 1, 'perPage' => 10];
+    $response = $this->withRootAdmin()->post('admin/users/search', $params);
+    $response->assertStatus(200);
+  }
+
   /**
    * @depends testRegisterByEmail
    */

@@ -43,7 +43,7 @@ class OrderController extends Controller
     Carts::delete($cartIds);
     Transaction::commit();
 
-    return success_response('success_to_order_from_cart');
+    return $this->success('success_to_order_from_cart');
   }
 
   public function post()
@@ -56,7 +56,7 @@ class OrderController extends Controller
       'logistic_inc' => $this->get('logistic_inc', 'nullable')
     ]);
 
-    return success_response('success_to_update_posting_information');
+    return $this->success('success_to_update_posting_information');
   }
 
   public function confirming()
@@ -68,7 +68,7 @@ class OrderController extends Controller
       'user_remark' => $this->get('user_remark')
     ]);
 
-    return success_response('success_to_update_confirming_information');
+    return $this->success('success_to_update_confirming_information');
   }
 
   public function abandon()
@@ -79,7 +79,7 @@ class OrderController extends Controller
       'status' => 'abandoning'
     ]);
 
-    return success_response('success_to_update_abandoning_information');
+    return $this->success('success_to_update_abandoning_information');
   }
 
   public function delete()
@@ -87,7 +87,7 @@ class OrderController extends Controller
     $orderIds = $this->get('order_ids');
     Orders::delete($orderIds);
 
-    return success_response('success_to_delete_order');
+    return $this->success('success_to_delete_order');
   }
 
   /**
@@ -111,7 +111,7 @@ class OrderController extends Controller
       'inbounded_at' => Carbon::now()
     ]);
 
-    return success_response('success_to_update_inbound_information');
+    return $this->success('success_to_update_inbound_information');
   }
 
   public function confirm()
@@ -126,7 +126,7 @@ class OrderController extends Controller
       'status' => $confirmed ? 'confirmed' : 'unexpected',
     ]);
 
-    return success_response('success_to_update_confirmed_information');
+    return $this->success('success_to_update_confirmed_information');
   }
 
   public function abandoned()
@@ -138,6 +138,6 @@ class OrderController extends Controller
       'is_abandoned' => true
     ]);
 
-    return success_response('success_to_update_abandoned_information');
+    return $this->success('success_to_update_abandoned_information');
   }
 }

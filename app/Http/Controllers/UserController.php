@@ -46,7 +46,7 @@ class UserController extends Controller
 			'address' => $this->get('address', 'nullable', '')
 		]);
 
-		return success_response('success_to_update_user_personal');
+		return $this->success('success_to_update_user_personal');
 	}
 
 	public function deleteByEmail()
@@ -62,8 +62,14 @@ class UserController extends Controller
 		// Users::deleteCreditCardAccounts($id);
 		Transaction::commit();
 
-		$message = 'success_to_delete_user';
+		return $this->success('success_to_delete_user');
+	}
 
-		return $this->success($message);
+	public function adminSearch()
+	{
+		$page = $this->get('page', 'numeric');
+		$perPage = $this->get('perPage', 'numeric');
+
+		return Users::adminSearch($page, $perPage);
 	}
 }

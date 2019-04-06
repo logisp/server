@@ -59,7 +59,6 @@ class Controller extends BaseController
 		return response()->json($messages, $status);
 	}
 
-
 	public function fail($messages, $status = 400)
 	{
 		if (!is_array($messages)) {

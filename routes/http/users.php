@@ -7,3 +7,7 @@ Route::middleware('auth:user')->group(function () {
   Route::post('user/personal/get', 'UserController@getPersonal');
   Route::post('user/personal/update', 'UserController@updatePersonal');
 });
+
+Route::middleware('auth:admin')->group(function () {
+  Route::post('admin/users/search', 'UserController@adminSearch');
+});

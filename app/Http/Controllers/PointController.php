@@ -56,7 +56,7 @@ class PointController extends Controller
 
     Transaction::begin();
     Points::updateOrder($id, $update);
-    Users::updateUser($order->user_id, ['points' => $order->points]);
+    Users::update($order->user_id, ['points' => $order->points]);
     Transaction::commit();
 
     return $this->success('success_to_confirm_point_order');
