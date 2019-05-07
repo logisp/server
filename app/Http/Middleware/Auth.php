@@ -17,18 +17,19 @@ class Auth
 		if (!$this->checkPayload($payload)) {
 			return error_response('token_is_invalid', 403);
 		}
+
 		$aud = $payload->aud;
 		$sub = $payload->sub;
 		$account = $this->getAccount($aud, $sub);
 		if (!$account) {
-			return error_response('account_is_now_invalid', 403);
+			return error_response('account_is_now_invalid', 401);
 		}
 		// $isRoot = in_array('root', $account->roles);
 		if (!$this->checkSystem($sub, $system)) {
-			return error_response('account_system_is_invalid', 403);
+			return error_response('account_system_is_invalid', 401);
 		}
 		if (!$this->checkRole($account->roles, $role)) {
-			return error_response('account_role_is_invalid', 403);
+			return error_response('account_role_is_invalid', 401);
 		}
 		AuthService::setAccount($account);
 

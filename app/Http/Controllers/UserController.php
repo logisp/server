@@ -72,4 +72,22 @@ class UserController extends Controller
 
 		return Users::adminSearch($page, $perPage);
 	}
+
+	public function getTitle()
+	{
+		$id = $this->get('id', 'integer|nullable');
+		if ($id === null) {
+			$id = Auth::user()->id;
+		}
+
+		$user = Users::find(['id' => $id], ['name', 'points']);
+		$email = Users::findEmail(['user_id' => $id]);
+
+		return [
+			'id' => $id,
+			'name' => $user->name,
+			'points' => $user->points,
+			'email' => $email->address
+		];
+	}
 }

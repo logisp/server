@@ -30,26 +30,15 @@ class Users
       'u.id', 'u.name', 'u.address', 'u.mobile',
       'e.address as email', 'u.points', 'u.created_at'
     ];
-    $total = DB::table('users')
-      ->select(DB::raw('count(*)'))
-      ->pluck('count')
-      ->first();
 
-    $users = DB::table('users as u')
+    $dataSource = DB::table('users as u')
       ->select($selects)
       ->leftJoin('user_emails as e', 'u.id', 'e.user_id')
-      ->offset($perPage * ($page - 1))
-      ->limit($perPage)
-      ->get()
-      ->toArray();
-    $users = $this->transformUsers($users);
+      ->miniPaginate();
 
-    return [
-      'total' => $total,
-      'page' => $page,
-      'perPage' => $perPage,
-      'data' => $users,
-    ];
+    $this->transformUsers($dataSource['data']);
+
+    return $dataSource;
   }
 
   public function createEmail($userId, $address)
@@ -89,10 +78,10 @@ class Users
     return $this->find(['username' => $username], $columns);
   }
 
-  public function findEmail($address)
+  public function findEmail($where)
   {
     return DB::table('user_emails')
-      ->where('address', $address)
+      ->where($where)
       ->first();
   }
 
@@ -228,7 +217,7 @@ class Users
     return Facades\Series::generate('user_id');
   }
 
-  protected function transformUsers(array $users)
+  protected function transformUsers($users)
   {
     foreach ($users as &$user) {
       if ($user && isset($user->roles)) {

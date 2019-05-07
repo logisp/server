@@ -41,22 +41,10 @@ class Fees
   public function getFeeLogs($page = 1, $perPage = 10, $name = null)
   {
     $query = DB::table('fee_logs')
-      ->select(DB::raw('count(*)'));
-    $name && $query->where('name', $name);
-    $total = $query->pluck('count')->first();
-
-    $query = DB::table('fee_logs')
-      ->orderBy('created_at', 'desc')
-      ->offset($perPage * ($page - 1))
-      ->limit($perPage);
+      ->orderBy('created_at', 'desc');
     $name && $query->where('name', $name);
 
-    return [
-      'data' => $query->get(),
-      'perPage' => $perPage,
-      'total' => $total,
-      'page' => $page,
-    ];
+    return $query->miniPaginate();
   }
 
   public function deleteFeeLogs($name)

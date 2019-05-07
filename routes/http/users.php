@@ -11,3 +11,7 @@ Route::middleware('auth:user')->group(function () {
 Route::middleware('auth:admin')->group(function () {
   Route::post('admin/users/search', 'UserController@adminSearch');
 });
+
+Route::middleware('auth')->group(function () {
+  Route::post('user/title/get', 'UserController@getTitle');
+});

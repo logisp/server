@@ -23,7 +23,7 @@ class AuthController extends Controller
 				'message' => 'fail_to_generate_user_token'
 			], 400);
 		} else {
-			$id = Users::findEmail($address)->user_id;
+			$id = Users::findEmail(['address' => $address])->user_id;
 			return $this->success([
 				'token' => JWT::encode('user', $id),
 				'message' => 'success_to_generate_user_token'

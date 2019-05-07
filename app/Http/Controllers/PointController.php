@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DB;
+use JWT;
 use Auth;
 use Transaction;
 use App\Domain\Facades\Users;
@@ -10,116 +11,126 @@ use App\Domain\Facades\Points;
 
 class PointController extends Controller
 {
-  public function userSearchOrders()
+  public function searchUserLogs()
   {
-    $id = Auth::user()->id;
+    $type = $this->get('type', 'required');
+    $userId = JWT::sub() === 'user'
+      ? Auth::user()->id
+      : $this->get('user_id', 'required');
 
-    return Points::userSearch($id);
+    return Points::searchUserLogs($userId, $type);
   }
 
-  public function adminSearchOrders()
-  {
-    return Points::adminSearch();
-  }
+  // public function userSearchOrders()
+  // {
+  //   $id = Auth::user()->id;
 
-  public function userCreateOrder()
-  {
-    $userId = Auth::user()->id;
-    $points = $this->get('points', 'required');
-    $insert = ['is_confirming' => true];
+  //   return Points::userSearch($id);
+  // }
 
-    $id = Points::createOrder($userId, $points, $insert);
+  // public function adminSearchOrders()
+  // {
+  //   return Points::adminSearch();
+  // }
 
-    return $this->success([
-      'message' => 'success_to_create_point_order',
-      'id' => $id
-    ]);
-  }
+  // public function userCreateOrder()
+  // {
+  //   $userId = Auth::user()->id;
+  //   $points = $this->get('points', 'required');
+  //   $insert = ['is_confirming' => true];
 
-  public function adminConfirmOrder()
-  {
-    $id = $this->get('id', 'required');
-    $adminId = Auth::admin()->id;
+  //   $id = Points::createOrder($userId, $points, $insert);
 
-    $update = [
-      'is_filed' => true,
-      'is_passed' => true,
-      'is_recorded' => true,
-      'is_confirming' => false,
-      'confirmer_id' => $adminId,
-      'filed_at' => DB::raw('now()'),
-      'passed_at' => DB::raw('now()'),
-      'recorded_at' => DB::raw('now()'),
-    ];
+  //   return $this->success([
+  //     'message' => 'success_to_create_point_order',
+  //     'id' => $id
+  //   ]);
+  // }
 
-    $order = Points::findById($id);
+  // public function adminConfirmOrder()
+  // {
+  //   $id = $this->get('id', 'required');
+  //   $adminId = Auth::admin()->id;
 
-    Transaction::begin();
-    Points::updateOrder($id, $update);
-    Users::update($order->user_id, ['points' => $order->points]);
-    Transaction::commit();
+  //   $update = [
+  //     'is_filed' => true,
+  //     'is_passed' => true,
+  //     'is_recorded' => true,
+  //     'is_confirming' => false,
+  //     'confirmer_id' => $adminId,
+  //     'filed_at' => DB::raw('now()'),
+  //     'passed_at' => DB::raw('now()'),
+  //     'recorded_at' => DB::raw('now()'),
+  //   ];
 
-    return $this->success('success_to_confirm_point_order');
-  }
+  //   $order = Points::findById($id);
 
-  public function userRecharge()
-  {
-    $userId = Auth::user()->id;
-    $points = $this->get('points', 'required');
-    $insert = [
-      'is_filed' => true,
-      'is_passed' => true,
-      'is_recorded' => true,
-      'confirmer_id' => 0,
-      'filed_at' => DB::raw('now()'),
-      'passed_at' => DB::raw('now()'),
-      'recorded_at' => DB::raw('now()'),
-    ];
+  //   Transaction::begin();
+  //   Points::updateOrder($id, $update);
+  //   Users::update($order->user_id, ['points' => $order->points]);
+  //   Transaction::commit();
 
-    Transaction::begin();
-    $id = Points::createOrder($userId, $points, $insert);
-    Users::updateUser($userId, ['points' => $points]);
-    Transaction::commit();
+  //   return $this->success('success_to_confirm_point_order');
+  // }
 
-    return $this->success([
-      'message' => 'success_to_recharge_points',
-      'id' => $id
-    ]);
-  }
+  // public function userRecharge()
+  // {
+  //   $userId = Auth::user()->id;
+  //   $points = $this->get('points', 'required');
+  //   $insert = [
+  //     'is_filed' => true,
+  //     'is_passed' => true,
+  //     'is_recorded' => true,
+  //     'confirmer_id' => 0,
+  //     'filed_at' => DB::raw('now()'),
+  //     'passed_at' => DB::raw('now()'),
+  //     'recorded_at' => DB::raw('now()'),
+  //   ];
 
-  public function adminAdjust()
-  {
-    $adminId = Auth::admin()->id;
-    $points = $this->get('points', 'required');
-    $userId = $this->get('user_id', 'required');
-    $insert = [
-      'admin_id' => $adminId,
-      'is_filed' => true,
-      'is_passed' => true,
-      'is_recorded' => true,
-      'confirmer_id' => $adminId,
-      'filed_at' => DB::raw('now()'),
-      'passed_at' => DB::raw('now()'),
-      'recorded_at' => DB::raw('now()')
-    ];
+  //   Transaction::begin();
+  //   $id = Points::createOrder($userId, $points, $insert);
+  //   Users::updateUser($userId, ['points' => $points]);
+  //   Transaction::commit();
 
-    Transaction::begin();
-    $id = Points::createOrder($userId, $points, $insert);
-    Users::updateUser($userId, ['points' => $points]);
-    Transaction::commit();
+  //   return $this->success([
+  //     'message' => 'success_to_recharge_points',
+  //     'id' => $id
+  //   ]);
+  // }
 
-    return $this->success([
-      'message' => 'success_to_adjust_points',
-      'id' => $id
-    ]);
-  }
+  // public function adminAdjust()
+  // {
+  //   $adminId = Auth::admin()->id;
+  //   $points = $this->get('points', 'required');
+  //   $userId = $this->get('user_id', 'required');
+  //   $insert = [
+  //     'admin_id' => $adminId,
+  //     'is_filed' => true,
+  //     'is_passed' => true,
+  //     'is_recorded' => true,
+  //     'confirmer_id' => $adminId,
+  //     'filed_at' => DB::raw('now()'),
+  //     'passed_at' => DB::raw('now()'),
+  //     'recorded_at' => DB::raw('now()')
+  //   ];
 
-  public function deleteOrder()
-  {
-    $id = $this->get('id', 'required');
+  //   Transaction::begin();
+  //   $id = Points::createOrder($userId, $points, $insert);
+  //   Users::updateUser($userId, ['points' => $points]);
+  //   Transaction::commit();
 
-    Points::deleteOrderById($id);
+  //   return $this->success([
+  //     'message' => 'success_to_adjust_points',
+  //     'id' => $id
+  //   ]);
+  // }
 
-    return $this->success('success_to_delete_order');
-  }
+  // public function deleteOrder()
+  // {
+  //   $id = $this->get('id', 'required');
+
+  //   Points::deleteOrderById($id);
+
+  //   return $this->success('success_to_delete_order');
+  // }
 }

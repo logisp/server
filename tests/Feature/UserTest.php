@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use Test;
+
 class UserTest extends TestCase
 {
   protected $address = 'unittest@logisp.com';
@@ -26,6 +28,21 @@ class UserTest extends TestCase
   {
     $params = ['page' => 1, 'perPage' => 10];
     $response = $this->withRootAdmin()->post('admin/users/search', $params);
+    $response->assertStatus(200);
+  }
+
+  public function testFindTitleByAuth()
+  {
+    $response = $this->withRootUser()
+      ->post('user/title/get');
+    $response->assertStatus(200);
+  }
+
+  public function testFindTitleById()
+  {
+    $id = Test::user()->id;
+    $response = $this->withRootAdmin()
+      ->post('user/title/get', ['id' => $id]);
     $response->assertStatus(200);
   }
 

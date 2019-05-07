@@ -17,7 +17,7 @@ Artisan::command('inspire', function () {
 	$this->comment(Inspiring::quote());
 })->describe('Display an inspiring quote');
 
-Artisan::command('database:rebuild', function () {
+Artisan::command('migrate:rebuild', function () {
 	$this->call('migrate:refresh');
 	$this->call('db:seed');
 })->describe('migrate:refresh && db:seed');

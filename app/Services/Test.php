@@ -28,7 +28,7 @@ class Test
   {
     $user = Users::findByUsername($this->username);
     $user->token = JWT::encode('user', $user->id);
-    $user->email = Users::findEmail($this->email);
+    $user->email = Users::findEmail(['address' => $this->email]);
     $this->user = $user;
   }
 

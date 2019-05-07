@@ -7,41 +7,66 @@ use Carbon\Carbon;
 
 class Points
 {
-  public function findById($id)
+  public function add($userId, $increments)
   {
-    return DB::table('point_orders')->where('id', $id)->first();
+    DB::table('users')->where('id', $userId)->update([
+      'points' => DB::raw("points + $increments")
+    ]);
   }
 
-  public function userSearch($userId)
+  public function searchUserLogs($userId, $type = null)
   {
-    return DB::table('point_orders')->where('user_id', $userId)->get();
-  }
+    $query = DB::table('user_point_logs')->where('user_id', $userId);
+    $type && $query->where('type', 'like', $type . '%');
 
-  public function adminSearch()
-  {
-    return DB::table('point_orders')->get();
-  }
-
-  public function createOrder($userId, $points, $insert = [])
-  {
-    $insert['user_id'] = $userId;
-    $insert['points'] = $points;
-
-    return DB::table('point_orders')->insertGetId($insert);
-  }
-
-  public function deleteOrderById($id)
-  {
-    DB::table('point_orders')->where('id', $id)->delete();
-  }
-
-  public function updateOrder($id, $update)
-  {
-    DB::table('point_orders')->where('id', $id)->update($update);
+    return $query->miniPaginate();
   }
 
   public function log($insert)
   {
-    DB::table('point_logs')->insert($insert);
+    return DB::table('user_point_logs')->insert($insert);
+  }
+
+  public function logGetId($insert)
+  {
+    return DB::table('user_point_logs')->insertGetId($insert);
+  }
+
+  public function logPurchase($userId, $increments)
+  {
+    return $this->logGetId([
+      'type' => 'purchase',
+      'user_id' => $userId,
+      'increments' => $increments
+    ]);
+  }
+
+  public function logConsumption($userId, $orderId, $type, $increments)
+  {
+    return $this->logGetId([
+      'user_id' => $userId,
+      'order_id' => $orderId,
+      'increments' => $increments,
+      'type' => 'consumption.' . $type
+    ]);
+  }
+
+  public function logAdjustment($userId, $adminId, $increments)
+  {
+    return $this->logGetId([
+      'user_id' => $userId,
+      'admin_id' => $adminId,
+      'type' => 'adjustment',
+      'increments' => $increments
+    ]);
+  }
+
+  public function deleteLogs($ids)
+  {
+    if (!is_array($ids)) {
+      $ids = [$ids];
+    }
+
+    DB::table('user_point_logs')->whereIn('id', $ids)->delete();
   }
 }

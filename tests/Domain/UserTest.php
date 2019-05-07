@@ -42,7 +42,7 @@ class UserTest extends TestCase
    */
   public function testCreateEmail($id)
   {
-    $email = Users::findEmail($this->address);
+    $email = Users::findEmail(['address' => $this->address]);
     if ($email) {
       $this->assertTrue(true);
 
@@ -88,7 +88,7 @@ class UserTest extends TestCase
   public function testDeleteEmail($id)
   {
     Users::deleteEmail(['address' => $this->address]);
-    $email = Users::findEmail($this->address);
+    $email = Users::findEmail(['address' => $this->address]);
     $this->assertNull($email);
   }
 
