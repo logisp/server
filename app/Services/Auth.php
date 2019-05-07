@@ -10,6 +10,7 @@ class Auth
 
   protected $tokenData;
 
+
   public function setAccount($account)
   {
     $this->account = $account;
