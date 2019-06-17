@@ -3,9 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
-
 use Transaction;
-
 use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 

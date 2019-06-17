@@ -6,7 +6,7 @@ class TestController extends Controller
 {
   public function root()
   {
-    return 'Logisp Api Service 2';
+    return 'Logisp Api Service 3';
   }
 
   public function test()
